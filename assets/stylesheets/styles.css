@@ -1,0 +1,45 @@
+#gameboard {
+    width: 800px;
+    height: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    z-index: 0;
+}
+
+.piece {
+    height: 100px;
+    width: 100px;
+    position: relative;
+    z-index: +10;
+}
+
+.piece:hover {
+    cursor: grab;
+}
+
+.piece:active {
+    cursor: grabbing;
+}
+
+.square {
+    height: 100px;
+    width: 100px;
+    position: relative;
+    z-index: +5;
+}
+
+/* .piece_from {
+}
+
+.piece_to {
+
+} */
+
+.brown {
+    background-color: rgb(159, 125, 86)
+}
+
+.light-brown {
+    background-color: rgb(239, 227, 196);
+}
+

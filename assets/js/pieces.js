@@ -1,0 +1,13 @@
+const black_pawn = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" draggable="true" data-moved="false" id="pawn" class="black_piece piece">'
+const black_rook = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/br.png" draggable="true" id="rook" class="black_piece piece">'
+const black_knight = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bn.png" draggable="true" id="knight" class="black_piece piece">'
+const black_bishop = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bb.png" draggable="true" id="bishop" class="black_piece piece">'
+const black_queen =  '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png" draggable="true" id="queen" class="black_piece piece">'
+const black_king = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bk.png" draggable="true" id="king" class="black_piece piece">'
+
+const white_pawn = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" draggable="true" data-moved="false" id="pawn" class="white_piece piece">'
+const white_rook = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png" draggable="true" id="rook" class="white_piece piece">'
+const white_knight = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png" draggable="true" id="knight" class="white_piece piece">'
+const white_bishop = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png" draggable="true" id="bishop" class="white_piece piece">'
+const white_queen = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png" draggable="true" id="queen" class="white_piece piece">'
+const white_king = '<img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wk.png" draggable="true" id="king" class="white_piece piece">'
