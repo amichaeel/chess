@@ -17,6 +17,8 @@ function search(current_piece, current_square) {
         case "pawn":
             available_moves = search_pawn_moves(current_piece_element, current_square);
             break;
+        case "rook":
+            available_moves = search_rook_moves(current_piece_element, current_square);
     }
 
     return available_moves;
@@ -146,9 +148,96 @@ function is_row_out_of_bounds(row) {
 }
 
 /* To be worked on */
-function available_moves_contain_pieces(available_moves) {}
-function search_rook_moves(current_square) {}
-function search_bishop_moves(current_square) {}
-function search_knight_moves(current_square) {}
-function search_queen_moves(current_square) {}
-function search_king_moves(current_square) {}
+function search_rook_moves(current_piece_element, current_square) {
+    const available_moves = [];
+    const col = current_square[0];
+    const row = current_square[1];
+
+    if (current_player == "white") {
+        const current_column_index = column_letter.indexOf(col);
+
+        // Search above
+        for (let cur_row = Number(row) + 1; cur_row <= 8; cur_row++) {
+            const square_element = document.querySelector(`[data-location="${col}${cur_row}"]`);
+            if (square_element.hasChildNodes()) {
+                const piece_found = square_element.childNodes[0];
+                const piece_color = piece_found.classList.contains("white_piece") ? "white" : "black";
+
+                if (piece_color == current_player) {
+                    break;
+                } else {
+                    available_moves.push(square_element.getAttribute("data-location"));
+                    break;
+                }
+            } else {
+                available_moves.push(square_element.getAttribute("data-location"));
+            }
+        }
+
+        // Search below
+        for (let cur_row = Number(row) - 1; cur_row >= 1; cur_row--) {
+
+            const square_element = document.querySelector(`[data-location="${col}${cur_row}"]`);
+            if (square_element.hasChildNodes()) {
+                const piece_found = square_element.childNodes[0];
+                const piece_color = piece_found.classList.contains("white_piece") ? "white" : "black";
+
+                if (piece_color == current_player) {
+                    break;
+                } else {
+                    available_moves.push(square_element.getAttribute("data-location"));
+                    break;
+                }
+            } else {
+                available_moves.push(square_element.getAttribute("data-location"));
+            }
+        }
+
+        // Search right
+        for (let cur_col = current_column_index+1; cur_col <= 8; cur_col++) {
+            const cur_col_letter = column_letter[cur_col];
+            const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
+
+            if (square_element.hasChildNodes()) {
+                const piece_found = square_element.childNodes[0];
+                const piece_color = piece_found.classList.contains("white_piece") ? "white" : "black";
+
+                if (piece_color == current_player) {
+                    break;
+                } else {
+                    available_moves.push(square_element.getAttribute("data-location"));
+                    break;
+                }
+            } else {
+                available_moves.push(square_element.getAttribute("data-location"));
+            }
+        }
+
+        // Search left
+        for (let cur_col = current_column_index-1; cur_col >= 1; cur_col--) {
+            const cur_col_letter = column_letter[cur_col];
+            const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
+
+            if (square_element.hasChildNodes()) {
+                const piece_found = square_element.childNodes[0];
+                const piece_color = piece_found.classList.contains("white_piece") ? "white" : "black";
+
+                if (piece_color == current_player) {
+                    break;
+                } else {
+                    available_moves.push(square_element.getAttribute("data-location"));
+                    break;
+                }
+            } else {
+                available_moves.push(square_element.getAttribute("data-location"));
+            }
+        }
+
+    }
+
+    return available_moves;
+}
+function search_bishop_moves(current_piece_element, current_square) {}
+function search_knight_moves(current_piece_element, current_square) {}
+function search_queen_moves(current_piece_element, current_square) {}
+function search_king_moves(current_piece_element, current_square) {}
