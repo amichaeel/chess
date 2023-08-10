@@ -176,7 +176,6 @@ function search_rook_moves(current_piece_element, current_square) {
 
         // Search below
         for (let cur_row = Number(row) - 1; cur_row >= 1; cur_row--) {
-
             const square_element = document.querySelector(`[data-location="${col}${cur_row}"]`);
             if (square_element.hasChildNodes()) {
                 const piece_found = square_element.childNodes[0];
@@ -194,7 +193,7 @@ function search_rook_moves(current_piece_element, current_square) {
         }
 
         // Search right
-        for (let cur_col = current_column_index+1; cur_col <= 8; cur_col++) {
+        for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
             const cur_col_letter = column_letter[cur_col];
             const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
 
@@ -214,7 +213,65 @@ function search_rook_moves(current_piece_element, current_square) {
         }
 
         // Search left
-        for (let cur_col = current_column_index-1; cur_col >= 1; cur_col--) {
+        for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
+            const cur_col_letter = column_letter[cur_col];
+            const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
+
+            if (square_element.hasChildNodes()) {
+                const piece_found = square_element.childNodes[0];
+                const piece_color = piece_found.classList.contains("white_piece") ? "white" : "black";
+
+                if (piece_color == current_player) {
+                    break;
+                } else {
+                    available_moves.push(square_element.getAttribute("data-location"));
+                    break;
+                }
+            } else {
+                available_moves.push(square_element.getAttribute("data-location"));
+            }
+        }
+    } else {
+        const current_column_index = column_letter.indexOf(col);
+
+        // Search above
+        for (let cur_row = Number(row) - 1; cur_row >= 1; cur_row--) {
+            const square_element = document.querySelector(`[data-location="${col}${cur_row}"]`);
+            if (square_element.hasChildNodes()) {
+                const piece_found = square_element.childNodes[0];
+                const piece_color = piece_found.classList.contains("white_piece") ? "white" : "black";
+
+                if (piece_color == current_player) {
+                    break;
+                } else {
+                    available_moves.push(square_element.getAttribute("data-location"));
+                    break;
+                }
+            } else {
+                available_moves.push(square_element.getAttribute("data-location"));
+            }
+        }
+
+        // Search below
+        for (let cur_row = Number(row) + 1; cur_row <= 8; cur_row++) {
+            const square_element = document.querySelector(`[data-location="${col}${cur_row}"]`);
+            if (square_element.hasChildNodes()) {
+                const piece_found = square_element.childNodes[0];
+                const piece_color = piece_found.classList.contains("white_piece") ? "white" : "black";
+
+                if (piece_color == current_player) {
+                    break;
+                } else {
+                    available_moves.push(square_element.getAttribute("data-location"));
+                    break;
+                }
+            } else {
+                available_moves.push(square_element.getAttribute("data-location"));
+            }
+        }
+
+        // Search left
+        for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
             const cur_col_letter = column_letter[cur_col];
             const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
 
@@ -233,10 +290,30 @@ function search_rook_moves(current_piece_element, current_square) {
             }
         }
 
+        // Search right
+        for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
+            const cur_col_letter = column_letter[cur_col];
+            const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
+
+            if (square_element.hasChildNodes()) {
+                const piece_found = square_element.childNodes[0];
+                const piece_color = piece_found.classList.contains("white_piece") ? "white" : "black";
+
+                if (piece_color == current_player) {
+                    break;
+                } else {
+                    available_moves.push(square_element.getAttribute("data-location"));
+                    break;
+                }
+            } else {
+                available_moves.push(square_element.getAttribute("data-location"));
+            }
+        }
     }
 
     return available_moves;
 }
+
 function search_bishop_moves(current_piece_element, current_square) {}
 function search_knight_moves(current_piece_element, current_square) {}
 function search_queen_moves(current_piece_element, current_square) {}
