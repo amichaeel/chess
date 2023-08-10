@@ -9,6 +9,16 @@ function change_player() {
     } else {
         current_player = "white";
     }
+
+    squares = chessboard.childNodes;
+
+    squares.forEach(square => {
+        if (square.classList.contains("highlighted-light")) {
+            square.classList.remove("highlighted-light");
+        } else if (square.classList.contains("highlighted-dark")) {
+            square.classList.remove("highlighted-dark");
+        }
+    })
 }
 
 function search(current_piece, current_square) {
@@ -351,7 +361,16 @@ function search_bishop_moves(current_piece_element, current_square) {
 
     return available_moves;
 }
-function search_knight_moves(current_piece_element, current_square) {}
+function search_knight_moves(current_piece_element, current_square) {
+    const available_moves = [];
+    const col = current_square[0];
+    const row = current_square[1];
+
+    if (current_player == "white") {
+
+    }
+
+}
 function search_queen_moves(current_piece_element, current_square) {}
 function search_king_moves(current_piece_element, current_square) {}
 
