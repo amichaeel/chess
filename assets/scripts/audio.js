@@ -1,0 +1,5 @@
+const capture = new Audio('../assets/sounds/capture.mp3')
+const move_self = new Audio('../assets/sounds/move-self.mp3')
+const move_check = new Audio('../assets/sounds/move-check.mp3')
+const castle = new Audio('../assets/sounds/castle.mp3')
+const promote = new Audio('../assets/sounds/promote.mp3')

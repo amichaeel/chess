@@ -92,6 +92,7 @@ function move_current_piece(target_square) {
             } else {
                 target_square_element.innerHTML = "";
                 target_square_element.append(current_piece_element);
+                capture.play();
 
                 if (current_piece == "pawn") {
                     current_piece_element.setAttribute("data-moved", true);
@@ -100,6 +101,7 @@ function move_current_piece(target_square) {
         } else {
             target_square_element.innerHTML = "";
             target_square_element.append(current_piece_element);
+            move_self.play();
 
             if (current_piece == "pawn") {
                 current_piece_element.setAttribute("data-moved", true);
@@ -545,9 +547,4 @@ function find_attacked_squares() {
     }
 
     return attacked_squares;
-
-    //     for (let square_location of set) {
-    //         const square = document.querySelector(`[data-location="${square_location}"]`);
-    //         square.style.backgroundColor = "red";
-    //     }
 }
