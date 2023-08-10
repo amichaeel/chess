@@ -46,3 +46,11 @@
     background-color: rgb(196, 93, 74);
     opacity: 95%;
 }
+
+.available-light {
+    background-color: #bbf0b5;
+}
+
+.available-dark {
+    background-color: #67b563;
+}

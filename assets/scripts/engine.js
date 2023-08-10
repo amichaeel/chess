@@ -2,6 +2,7 @@ let current_player = "white";
 let current_piece_element;
 let current_piece;
 let current_square;
+let available_moves;
 
 function change_player() {
     if (current_player == "white") {
@@ -22,7 +23,6 @@ function change_player() {
 }
 
 function search(current_piece, current_square) {
-    let available_moves = [];
     switch (current_piece) {
         case "pawn":
             available_moves = search_pawn_moves(current_piece_element, current_square);
@@ -52,6 +52,29 @@ function valid_start(piece, piece_color, square) {
         current_piece_element = piece;
         current_piece = piece.getAttribute("id");
         current_square = square;
+        let available_moves = search(current_piece, current_square);
+        const squares = chessboard.childNodes;
+        for (let square of squares) {
+            const square_location = square.getAttribute("data-location");
+            if (available_moves.includes(square_location)) {
+                if (square.hasChildNodes()) {
+                    const piece_color = square.childNodes[0].classList.contains("white_piece") ? "white" : "black";
+                    if (piece_color != current_player) {
+                        if (square.classList.contains("light-square")) {
+                            square.classList.add("available-light");
+                        } else {
+                            square.classList.add("available-dark");
+                        }
+                    }
+                } else {
+                    if (square.classList.contains("light-square")) {
+                        square.classList.add("available-light");
+                    } else {
+                        square.classList.add("available-dark");
+                    }
+                }
+            }
+        }
         return true;
     }
 
@@ -59,10 +82,6 @@ function valid_start(piece, piece_color, square) {
 }
 
 function move_current_piece(target_square) {
-    let available_moves = search(current_piece, current_square);
-
-    console.log(available_moves);
-
     if (available_moves.includes(target_square)) {
         const target_square_element = document.querySelector(`[data-location="${target_square}"]`);
 
@@ -527,8 +546,8 @@ function find_attacked_squares() {
 
     return attacked_squares;
 
-//     for (let square_location of set) {
-//         const square = document.querySelector(`[data-location="${square_location}"]`);
-//         square.style.backgroundColor = "red";
-//     }
+    //     for (let square_location of set) {
+    //         const square = document.querySelector(`[data-location="${square_location}"]`);
+    //         square.style.backgroundColor = "red";
+    //     }
 }

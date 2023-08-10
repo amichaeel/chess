@@ -31,6 +31,14 @@ function move_piece(e) {
 
 function release_piece(e) {
     const target_square = e.currentTarget.getAttribute("data-location");
+    const squares = chessboard.childNodes;
+    for (let square of squares) {
+        if (square.classList.contains("available-light")) {
+            square.classList.remove("available-light");
+        } else if (square.classList.contains("available-dark")) {
+            square.classList.remove("available-dark");
+        }
+    }
     if (is_current_player_piece) {
         move_current_piece(target_square);
     }
