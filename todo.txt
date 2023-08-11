@@ -1,0 +1,5 @@
+
+1) make sure king cant go to attacked squares
+2) add ability to check and checkmate
+3) add ability to castle
+4) add ability to en passant

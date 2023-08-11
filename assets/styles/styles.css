@@ -12,7 +12,7 @@
     height: 150px;
     width: 150px;
     position: relative;
-    /* z-index: +15; */
+    
     transition: background-color 0.2s ease-in-out;
 }
 
@@ -38,12 +38,12 @@
 }
 
 .highlighted-light {
-    background-color: rgb(239, 114, 92);
+    background-color: rgb(239, 114, 92) !important;
     opacity: 85%;
 }
 
 .highlighted-dark {
-    background-color: rgb(196, 93, 74);
+    background-color: rgb(196, 93, 74) !important;
     opacity: 95%;
 }
 
@@ -53,4 +53,8 @@
 
 .available-dark {
     background-color: #67b563;
+}
+
+.available-with-pawn {
+    background-color: lightcoral;
 }
