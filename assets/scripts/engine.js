@@ -3,6 +3,8 @@ let current_piece_element;
 let current_piece;
 let current_square;
 let current_available_moves;
+let is_under_check;
+let threat;
 
 function change_player() {
     if (current_player == "white") {
@@ -20,13 +22,16 @@ function change_player() {
             square.classList.remove("highlighted-dark");
         }
     });
+
+    // Check for check, checkmate, and stalemate.
+    threat = check_for_check();
 }
 
-function search(current_piece, current_square) {
+function search(current_piece, current_square, piece_element) {
     let moves_found;
     switch (current_piece) {
         case "pawn":
-            moves_found = search_pawn_moves(current_piece_element, current_square);
+            moves_found = search_pawn_moves(piece_element, current_square);
             break;
         case "rook":
             moves_found = search_rook_moves(current_square);
@@ -53,21 +58,37 @@ function valid_start(piece, piece_color, square) {
         current_piece_element = piece;
         current_piece = piece.getAttribute("id");
         current_square = square;
-        let moves_allowed = search(current_piece, current_square);
+        let moves_to_get_out_of_check;
+        let moves_allowed;
         let attacked_sqs;
 
-        if (current_piece == "king") {
-            attacked_sqs = find_attacked_squares();
-            const set = new Set([].concat(...attacked_sqs));
-            moves_allowed = moves_allowed.filter((move) => !set.has(move));
+        if (!is_under_check) {
+            moves_allowed = search(current_piece, current_square, piece);
+            if (current_piece == "king") {
+                attacked_sqs = find_attacked_squares();
+                const set = new Set([].concat(...attacked_sqs));
+                moves_allowed = moves_allowed.filter((move) => !set.has(move));
+            }
+            current_available_moves = moves_allowed;
+        } else {
+            moves_to_get_out_of_check = get_out_of_check();
+            moves_allowed = search(current_piece, current_square, piece);
+            if (current_piece == "king") {
+                attacked_sqs = find_attacked_squares();
+                const set = new Set([].concat(...attacked_sqs));
+                let king_moves = moves_allowed.filter(move => !set.has(move));
+                current_available_moves = king_moves;
+                console.log(current_available_moves)
+            } else {
+                current_available_moves = moves_allowed.filter(move => moves_to_get_out_of_check.includes(move))
+            }
         }
-        current_available_moves = moves_allowed;
 
         // Highlight available squares!
         const squares = chessboard.childNodes;
         for (let square of squares) {
             const square_location = square.getAttribute("data-location");
-            if (moves_allowed.includes(square_location)) {
+            if (current_available_moves.includes(square_location)) {
                 if (square.hasChildNodes()) {
                     const piece_color = square.childNodes[0].classList.contains("white_piece") ? "white" : "black";
                     if (piece_color != current_player) {
@@ -108,7 +129,6 @@ function move_current_piece(target_square) {
         } else {
             target_square_element.innerHTML = "";
             target_square_element.append(current_piece_element);
-            move_self.play();
 
             if (current_piece == "pawn") {
                 current_piece_element.setAttribute("data-moved", true);
@@ -118,14 +138,14 @@ function move_current_piece(target_square) {
     }
 }
 
-function search_pawn_moves(current_piece_element, current_square) {
-    const pawn_has_moved = current_piece_element.getAttribute("data-moved") == "true" ? true : false;
+function search_pawn_moves(piece_element, current_square) {
+    const pawn_has_moved = piece_element.getAttribute("data-moved") == "true" ? true : false;
     const moves = [];
     const col = current_square[0];
     const row = current_square[1];
     let left_diag_square;
     let right_diag_square;
-    const pawn_color = current_piece_element.classList.contains("white_piece") ? "white" : "black";
+    const pawn_color = piece_element.classList.contains("white_piece") ? "white" : "black";
 
     if (pawn_color == "white") {
         const current_column_index = column_letter.indexOf(col);
@@ -141,7 +161,6 @@ function search_pawn_moves(current_piece_element, current_square) {
 
         if (left_diag_square != undefined && left_diag_square.hasChildNodes()) {
             moves.push(left_diag_square.getAttribute("data-location"));
-            console.log(moves);
         }
 
         if (right_diag_square != undefined && right_diag_square.hasChildNodes()) {
@@ -554,3 +573,188 @@ function find_attacked_squares() {
 
     return attacked_squares;
 }
+
+function check_for_check() {
+    let king_location;
+    let attacked_sqs;
+    let threat_information = [];
+
+    const squares = chessboard.childNodes;
+
+    // Find the location of players king
+    for (let square of squares) {
+        if (square.hasChildNodes()) {
+            const piece = square.childNodes[0];
+            if (piece.classList.contains(`${current_player}_piece`)) {
+                const piece_id = piece.id;
+                if (piece.id == "king") {
+                    king_location = square.getAttribute("data-location");
+                }
+            }
+        }
+    }
+
+    attacked_sqs = find_attacked_squares();
+    const set = new Set([].concat(...attacked_sqs));
+
+    if (set.has(king_location)) {
+        move_check.play();
+        is_under_check = true;
+        // Identify the threat.
+        // Scan for the move set of each piece. Once a moveset is returned that contains the kings location, return the piece name and color.
+
+        for (let square of squares) {
+            if (square.hasChildNodes()) {
+                const piece_element = square.childNodes[0];
+                if (!piece_element.classList.contains(`${current_player}_piece`)) {
+                    const piece_id = piece_element.id;
+                    const current_square = square.getAttribute("data-location");
+                    const move_set = search(piece_id, current_square, piece_element);
+                    if (move_set.includes(king_location)) {
+                        threat_information[0] = piece_id;
+                        threat_information[1] = current_square;
+                        threat_information[2] = king_location;
+                        break;
+                    }
+                }
+            }
+        }
+    } else {
+        is_under_check = false;
+        move_self.play();
+    }
+
+    return threat_information;
+}
+
+function get_out_of_check() {
+    let moves = [];
+    const attacked_moves = [];
+    const king_location = threat[2]
+    const threat_piece = threat[0];
+    const threat_location = threat[1];
+    const col = threat_location[0];
+    const row = threat_location[1];
+    const current_column_index = column_letter.indexOf(col);
+    moves.push(threat_location);
+
+    switch (threat_piece) {
+        case "queen":
+            let sequences = [[],[],[],[],[],[],[],[]];
+            let north_sequence = 0;
+            let south_sequence = 1;
+            let east_sequence = 2;
+            let west_sequence = 3;
+            let north_west_sequence = 4;
+            let north_east_sequence = 5;
+            let south_west_sequence = 6;
+            let south_east_sequence = 7;
+            attacker_moves = search_queen_moves(threat_location);
+
+            // Get north sequence
+            for (let cur_row = Number(row) + 1; cur_row <= 8; cur_row++) {
+                const element = document.querySelector(`[data-location="${col}${cur_row}"]`);
+                const can_continue_searching = continue_searching(element, sequences[north_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+            }
+
+            console.log(north_sequence);
+
+            // Get south sequence
+            for (let cur_row = Number(row) - 1; cur_row >= 1; cur_row--) {
+                const element = document.querySelector(`[data-location="${col}${cur_row}"]`);
+                const can_continue_searching = continue_searching(element, sequences[south_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+            }
+            // Get east sequence
+            for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
+                const cur_col_letter = column_letter[cur_col];
+                const element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
+                const can_continue_searching = continue_searching(element, sequences[east_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+            }
+
+            // Get west sequence
+            for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
+                const cur_col_letter = column_letter[cur_col];
+                const element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
+                const can_continue_searching = continue_searching(element, sequences[west_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+            }
+
+            let cur_row;
+
+            // Get north east seauence
+            cur_row = Number(row) + 1;
+            for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
+                const cur_col_letter = column_letter[cur_col];
+                const element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
+                const can_continue_searching = continue_searching(element, sequences[north_east_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+                cur_row++;
+            }
+
+            // Get north west sequence
+            cur_row = Number(row) + 1;
+            for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
+                const cur_col_letter = column_letter[cur_col];
+                const element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
+                const can_continue_searching = continue_searching(element, sequences[north_west_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+                cur_row++;
+            }
+
+            // Get south east sequence
+            cur_row = Number(row) - 1;
+            for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
+                const cur_col_letter = column_letter[cur_col];
+                const element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
+                const can_continue_searching = continue_searching(element, sequences[south_east_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+                cur_row--;
+            }
+
+            // Get south west sequence
+            cur_row = Number(row) - 1;
+            for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
+                const cur_col_letter = column_letter[cur_col];
+                const element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
+                const can_continue_searching = continue_searching(element, sequences[south_west_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+                cur_row--;
+            }
+
+
+            // Loop through all found sequences, add sequences that contains kings location
+            console.log(sequences)
+            for (let sequence of sequences) {
+                if (sequence.includes(king_location)) {
+                    moves.push(sequence)
+                }
+            }
+
+    }
+
+    moves = Array.from(new Set([].concat(...moves)));
+    return moves;
+}
+
+function check_for_mate() {}
+
+function check_for_stalemate() {}
