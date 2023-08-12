@@ -78,7 +78,6 @@ function valid_start(piece, piece_color, square) {
                 const set = new Set([].concat(...attacked_sqs));
                 let king_moves = moves_allowed.filter(move => !set.has(move));
                 current_available_moves = king_moves;
-                console.log(current_available_moves)
             } else {
                 current_available_moves = moves_allowed.filter(move => moves_to_get_out_of_check.includes(move))
             }
@@ -802,7 +801,7 @@ function get_out_of_check() {
                 cur_row--;
             }
 
-                        // Loop through all found sequences, add sequences that contains kings location
+            // Loop through all found sequences, add sequences that contains kings location
             for (let sequence of bishop_sequences) {
                 if (sequence.includes(king_location)) {
                     moves.push(sequence)
@@ -810,10 +809,59 @@ function get_out_of_check() {
             }
 
             break;
-            
+        case "rook":
+            let rook_sequences = [[], [], [], []];
+            let rook_north_sequence = 0;
+            let rook_south_sequence = 1;
+            let rook_east_sequence = 2;
+            let rook_west_sequence = 3;
+
+             // Get north sequence
+            for (let cur_row = Number(row) + 1; cur_row <= 8; cur_row++) {
+                const element = document.querySelector(`[data-location="${col}${cur_row}"]`);
+                const can_continue_searching = continue_searching(element, rook_sequences[rook_north_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+            }
+
+            // Get south sequence
+            for (let cur_row = Number(row) - 1; cur_row >= 1; cur_row--) {
+                const element = document.querySelector(`[data-location="${col}${cur_row}"]`);
+                const can_continue_searching = continue_searching(element, rook_sequences[rook_south_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+            }
+            // Get east sequence
+            for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
+                const cur_col_letter = column_letter[cur_col];
+                const element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
+                const can_continue_searching = continue_searching(element, rook_sequences[rook_east_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+            }
+
+            // Get west sequence
+            for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
+                const cur_col_letter = column_letter[cur_col];
+                const element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
+                const can_continue_searching = continue_searching(element, rook_sequences[rook_west_sequence]);
+                if (!can_continue_searching) {
+                    break;
+                }
+            }
+
+            // Loop through all found sequences, add sequences that contains kings location
+            for (let sequence of rook_sequences) {
+                if (sequence.includes(king_location)) {
+                    moves.push(sequence)
+                }
+            }
+
+            break;
     }
-
-
 
     // Dont forget to delete repeated elements
     moves = Array.from(new Set([].concat(...moves)));

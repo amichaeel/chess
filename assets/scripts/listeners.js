@@ -1,4 +1,6 @@
 /* This script contains all functions related to event listeners */
+
+
 let is_current_player_piece;
 
 function hightlight_square(e) {
@@ -22,27 +24,6 @@ function select_piece(e) {
     const piece = e.target;
     const piece_color = piece.getAttribute("class").includes("white") ? "white" : "black";
     const square = piece.parentElement.getAttribute("data-location");
-
-    // // Deselect behavior
-    // const squares = chessboard.childNodes
-    // for (let squareI of squares) {
-    //     if (squareI.classList.contains('available-light') || squareI.classList.contains('available-dark') || squareI.classList.contains('available-with-piece')) {
-    //         for (let square of squares) {
-    //             if (square.classList.contains("available-light")) {
-    //                 square.classList.remove("available-light");
-    //             } else if (square.classList.contains("available-dark")) {
-    //                 square.classList.remove("available-dark");
-    //             } else if (square.classList.contains("available-with-pawn")) {
-    //                 square.classList.remove("available-with-pawn")
-    //             }
-    //         }
-
-    //         return;
-    //     }
-    // }
-
-
-
     is_current_player_piece = valid_start(piece, piece_color, square);
 }
 
