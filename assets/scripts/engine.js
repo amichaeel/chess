@@ -76,10 +76,10 @@ function valid_start(piece, piece_color, square) {
             if (current_piece == "king") {
                 attacked_sqs = find_attacked_squares();
                 const set = new Set([].concat(...attacked_sqs));
-                let king_moves = moves_allowed.filter(move => !set.has(move));
+                let king_moves = moves_allowed.filter((move) => !set.has(move));
                 current_available_moves = king_moves;
             } else {
-                current_available_moves = moves_allowed.filter(move => moves_to_get_out_of_check.includes(move))
+                current_available_moves = moves_allowed.filter((move) => moves_to_get_out_of_check.includes(move));
             }
         }
 
@@ -167,8 +167,9 @@ function search_pawn_moves(piece_element, current_square) {
         }
 
         if (!pawn_has_moved) {
-            const square_above = document.querySelector(`[data-location="${col}${Number(row) + 2}"]`);
-            if (!is_row_out_of_bounds(Number(row) + 2) && !square_above.hasChildNodes()) {
+            const square_right_above = document.querySelector(`[data-location="${col}${Number(row) + 1}"]`);
+            const square_two_above = document.querySelector(`[data-location="${col}${Number(row) + 2}"]`);
+            if (!is_row_out_of_bounds(Number(row) + 2) && !square_right_above.hasChildNodes() && !square_two_above.hasChildNodes()) {
                 moves.push(`${col}${Number(row) + 2}`);
             }
         }
@@ -198,8 +199,9 @@ function search_pawn_moves(piece_element, current_square) {
             moves.push(right_diag_square.getAttribute("data-location"));
         }
         if (!pawn_has_moved) {
-            const square_above = document.querySelector(`[data-location="${col}${Number(row) - 2}"]`);
-            if (!is_row_out_of_bounds(Number(row) - 2) && !square_above.hasChildNodes()) {
+            const square_right_above = document.querySelector(`[data-location="${col}${Number(row) - 1}"]`);
+            const square_two_above = document.querySelector(`[data-location="${col}${Number(row) - 2}"]`);
+            if (!is_row_out_of_bounds(Number(row) - 2) && !square_two_above.hasChildNodes() && !square_right_above.hasChildNodes()) {
                 moves.push(`${col}${Number(row) - 2}`);
             }
         }
@@ -627,9 +629,9 @@ function check_for_check() {
 }
 
 function get_out_of_check() {
-    const piece_names = ["pawn", "king", "queen", "rook", "bishop", "knight"]
+    const piece_names = ["pawn", "king", "queen", "rook", "bishop", "knight"];
     let moves = [];
-    const king_location = threat[2]
+    const king_location = threat[2];
     const threat_piece = threat[0];
     const threat_location = threat[1];
     const col = threat_location[0];
@@ -640,7 +642,7 @@ function get_out_of_check() {
 
     switch (threat_piece) {
         case "queen":
-            let queen_sequences = [[],[],[],[],[],[],[],[]];
+            let queen_sequences = [[], [], [], [], [], [], [], []];
             let queen_north_sequence = 0;
             let queen_south_sequence = 1;
             let queen_east_sequence = 2;
@@ -736,18 +738,17 @@ function get_out_of_check() {
                 cur_row--;
             }
 
-
             // Loop through all found sequences, add sequences that contains kings location
             for (let sequence of queen_sequences) {
                 if (sequence.includes(king_location)) {
-                    moves.push(sequence)
+                    moves.push(sequence);
                 }
             }
 
             break;
-        
+
         case "bishop":
-            let bishop_sequences = [[],[],[],[]]
+            let bishop_sequences = [[], [], [], []];
             let bishop_north_west_sequence = 0;
             let bishop_north_east_sequence = 1;
             let bishop_south_west_sequence = 2;
@@ -804,7 +805,7 @@ function get_out_of_check() {
             // Loop through all found sequences, add sequences that contains kings location
             for (let sequence of bishop_sequences) {
                 if (sequence.includes(king_location)) {
-                    moves.push(sequence)
+                    moves.push(sequence);
                 }
             }
 
@@ -816,7 +817,7 @@ function get_out_of_check() {
             let rook_east_sequence = 2;
             let rook_west_sequence = 3;
 
-             // Get north sequence
+            // Get north sequence
             for (let cur_row = Number(row) + 1; cur_row <= 8; cur_row++) {
                 const element = document.querySelector(`[data-location="${col}${cur_row}"]`);
                 const can_continue_searching = continue_searching(element, rook_sequences[rook_north_sequence]);
@@ -856,10 +857,18 @@ function get_out_of_check() {
             // Loop through all found sequences, add sequences that contains kings location
             for (let sequence of rook_sequences) {
                 if (sequence.includes(king_location)) {
-                    moves.push(sequence)
+                    moves.push(sequence);
                 }
             }
 
+            break;
+
+        case "knight":
+            // In the case of knights, the queen needs to be able to either move, or a piece needs to be able to capture the knight.
+            // This functionality is handeled in valid start, as it handles king movement and knows the location of the threat.
+            break;
+        case "pawn":
+            // Pawn can either block by moving forward or taking the threat. This functionallity is handled in other methods.
             break;
     }
 

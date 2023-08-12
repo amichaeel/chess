@@ -1,5 +1,9 @@
+1) pinned piece behavior..
+2) check if its check mate.
+3) check if its stalemate.
+4) castling and en passant behavior.
 
-1) make sure king cant go to attacked squares
-2) add ability to check and checkmate
-3) add ability to castle
-4) add ability to en passant
+KNOWN BUGS
+
+
+- if pawn hasnt moved and a piece is in front of it, pawn can still move two spaces up.
