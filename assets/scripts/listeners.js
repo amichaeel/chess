@@ -35,7 +35,6 @@ function select_piece(e) {
     active_piece.style.position = "absolute";
     active_piece.style.left = `${x}px`;
     active_piece.style.top = `${y}px`;
-    active_piece.classList.add('dragging')
     is_current_player_piece = valid_start(active_piece, piece_color, square);
 }
 
@@ -96,7 +95,6 @@ function release_piece(e) {
         active_piece.style.left = null;
         active_piece.style.top = null;
         active_piece.style.position = null;
-        active_piece.classList.remove('dragging')
         active_piece = null;
     }
      
