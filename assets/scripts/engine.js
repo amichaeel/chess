@@ -877,6 +877,11 @@ function get_out_of_check() {
     return moves;
 }
 
+
+function check_if_piece_is_pinned() {
+
+}
+
 function check_for_mate() {}
 
 function check_for_stalemate() {}

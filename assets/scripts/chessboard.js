@@ -71,13 +71,15 @@ function init_event_listeners() {
 
     for (let square of squares) {
         square.addEventListener("contextmenu", hightlight_square);
-        square.addEventListener("drop", release_piece);
-        square.addEventListener("dragover", move_piece);
+        // square.addEventListener("drop", release_piece);
+        // square.addEventListener("dragover", move_piece);
 
         if (square.hasChildNodes()) {
             const piece = square.childNodes[0];
             piece.dataset.moved = false;
-            piece.addEventListener("dragstart", select_piece);
+            piece.addEventListener("mousedown", select_piece);
+            // piece.addEventListener("mousemove", move_piece);
+            piece.addEventListener("mouseup", release_piece);
         }
     }
 }

@@ -1,9 +1,5 @@
-1) pinned piece behavior..
+1) pinned piece behavior
 2) check if its check mate.
 3) check if its stalemate.
+4) pawn promotion
 4) castling and en passant behavior.
-
-KNOWN BUGS
-
-
-- if pawn hasnt moved and a piece is in front of it, pawn can still move two spaces up.
