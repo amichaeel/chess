@@ -3,6 +3,7 @@
 let is_current_player_piece;
 let active_piece;
 let active_square;
+let selected = false;
 
 function hightlight_square(e) {
     e.preventDefault();
@@ -23,31 +24,43 @@ function hightlight_square(e) {
 
 function select_piece(e) {
     e.preventDefault();
-    active_piece = e.target;
-    const piece_color = active_piece.getAttribute("class").includes("white") ? "white" : "black";
+    if (e.button == 1 || e.button == 2) {
+        selected = false;
+        return;
+    }
+    selected = true;
+    let temp = e.target;
+    const piece_color = temp.getAttribute("class").includes("white") ? "white" : "black";
+    if (piece_color != current_player) return;
+    active_piece = temp;
     const square = active_piece.parentElement.getAttribute("data-location");
     active_piece.addEventListener("mousemove", move_piece);
 
 
     // Movement logic
-    const x = e.clientX - 80;
-    const y = e.clientY - 80;
+    const x = e.clientX - 75;
+    const y = e.clientY - 85;
     active_piece.style.position = "absolute";
     active_piece.style.left = `${x}px`;
     active_piece.style.top = `${y}px`;
     is_current_player_piece = valid_start(active_piece, piece_color, square);
+    if (is_current_player_piece) {
+        active_piece.classList.add('piece-with-hover')
+    }
 }
 
 function move_piece(e) {
     e.preventDefault();
+
+    if (selected == false) return; 
     const minX = chessboard.offsetLeft - 75;
     const minY = chessboard.offsetTop - 75;
     const maxX = chessboard.offsetLeft + chessboard.clientWidth - 75;
     const maxY = chessboard.offsetTop + chessboard.clientHeight - 75;
 
     if (active_piece) {
-        const x = e.clientX - 80;
-        const y = e.clientY - 80;
+        const x = e.clientX - 75;
+        const y = e.clientY - 85;
         active_piece.style.position = "absolute";
 
 
@@ -95,6 +108,7 @@ function release_piece(e) {
         active_piece.style.left = null;
         active_piece.style.top = null;
         active_piece.style.position = null;
+        active_piece.classList.remove("piece-with-hover");
         active_piece = null;
     }
      

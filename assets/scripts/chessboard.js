@@ -82,10 +82,28 @@ function init_event_listeners() {
     }
 }
 
+function init_coords() {
+    const files_element = document.querySelector(".files");
+    const ranks_element = document.querySelector(".ranks");
+    const files = files_element.childNodes;
+    const ranks = ranks_element.childNodes;
+
+    for (let i = 0; i < files.length; i++) {
+        if (i % 2 == 0) {
+            files[i].classList.add("coords-dark");
+            ranks[i].classList.add("coords-light");
+        } else {
+            files[i].classList.add("coords-light");
+            ranks[i].classList.add("coords-dark");
+        }
+    }
+}
+
 function init() {
     init_chessboard();
     init_pieces();
     init_event_listeners();
+    init_coords();
 }
 
 init();

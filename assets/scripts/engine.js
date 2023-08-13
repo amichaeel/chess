@@ -64,7 +64,6 @@ function valid_start(piece, piece_color, square) {
         let attacked_sqs;
 
         const pinned = check_if_piece_is_pinned(square);
-        console.log(pinned)
 
         if (pinned.includes(current_square) && pinned.length > 1 && pinned.length < 4 && current_piece != "king") {
             if (current_piece == "pawn") {
