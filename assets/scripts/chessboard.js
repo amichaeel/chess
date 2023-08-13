@@ -77,6 +77,7 @@ function init_event_listeners() {
             piece.dataset.moved = false;
             piece.addEventListener("mousedown", select_piece);
             piece.addEventListener("mouseup", release_piece);
+            // piece.addEventListener('click', select_piece)
         }
     }
 }

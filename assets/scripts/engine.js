@@ -5,7 +5,7 @@ let current_square;
 let current_available_moves;
 let is_under_check;
 let threat;
-console.log("~~~~~~~~~CHESS LITE V1.0~~~~~~~~~~~~")
+console.log("\n\n~~~~~~~~~CHESS LITE V1.0~~~~~~~~~~~~\n\n\n");
 
 function change_player() {
     if (current_player == "white") {
@@ -64,6 +64,7 @@ function valid_start(piece, piece_color, square) {
         let attacked_sqs;
 
         const pinned = check_if_piece_is_pinned(square);
+        console.log(pinned)
 
         if (pinned.includes(current_square) && pinned.length > 1 && pinned.length < 4 && current_piece != "king") {
             if (current_piece == "pawn") {
@@ -71,6 +72,10 @@ function valid_start(piece, piece_color, square) {
                 const threat_col = pinned[0][0];
                 if (pawn_col == threat_col) {
                     moves_allowed = search(current_piece, current_square, piece);
+                    current_available_moves = moves_allowed;
+                } else {
+                    moves_allowed = search(current_piece, current_square, piece);
+                    moves_allowed = moves_allowed.filter((move) => pinned.includes(move));
                     current_available_moves = moves_allowed;
                 }
             } else {
@@ -90,7 +95,6 @@ function valid_start(piece, piece_color, square) {
             moves_to_get_out_of_check = get_out_of_check();
             moves_allowed = search(current_piece, current_square, piece);
             if (current_piece == "king") {
-
                 attacked_sqs = all_dangerous_squares();
                 const set = new Set([].concat(...attacked_sqs));
                 let king_moves = moves_allowed.filter((move) => !set.has(move));
@@ -109,12 +113,15 @@ function valid_start(piece, piece_color, square) {
                     const piece_color = square.childNodes[0].classList.contains("white_piece") ? "white" : "black";
                     if (piece_color != current_player) {
                         square.classList.add("available-with-pawn");
+                        // square.addEventListener("click", release_piece);
                     }
                 } else {
                     if (square.classList.contains("light-square")) {
                         square.classList.add("available-light");
+                        // square.addEventListener("click", release_piece);
                     } else {
                         square.classList.add("available-dark");
+                        // square.addEventListener("click", release_piece);
                     }
                 }
             }
@@ -180,7 +187,7 @@ function search_pawn_moves(piece_element, current_square, attack_only) {
             if (left_diag_square != undefined) {
                 moves.push(left_diag_square.getAttribute("data-location"));
             }
-    
+
             if (right_diag_square != undefined) {
                 moves.push(right_diag_square.getAttribute("data-location"));
             }
@@ -231,7 +238,7 @@ function search_pawn_moves(piece_element, current_square, attack_only) {
             if (left_diag_square != undefined) {
                 moves.push(left_diag_square.getAttribute("data-location"));
             }
-    
+
             if (right_diag_square != undefined) {
                 moves.push(right_diag_square.getAttribute("data-location"));
             }
@@ -567,7 +574,7 @@ function continue_searching(square_element, moves, bypass, max_bypass) {
                 return false;
             }
         }
-        moves.push(square_element.getAttribute("data-location"))
+        moves.push(square_element.getAttribute("data-location"));
         return true;
     }
 
@@ -961,7 +968,7 @@ function all_dangerous_squares() {
     const max_bypass = true;
     const bypass = false;
     const attack_only = true;
-    let moves = []
+    let moves = [];
     const squares = chessboard.childNodes;
 
     squares.forEach((square) => {
@@ -969,11 +976,11 @@ function all_dangerous_squares() {
             const piece = square.childNodes[0];
             if (!piece.classList.contains(`${current_player}_piece`)) {
                 const piece_id = piece.getAttribute("id");
-                const square_location = square.getAttribute("data-location")
+                const square_location = square.getAttribute("data-location");
                 moves.push(search(piece_id, square_location, piece, bypass, max_bypass, attack_only));
             }
         }
-    })
+    });
     return moves;
 }
 function check_if_piece_is_pinned(piece_location) {
@@ -1017,7 +1024,7 @@ function check_if_piece_is_pinned(piece_location) {
                         let queen_north_east_sequence = 5;
                         let queen_south_west_sequence = 6;
                         let queen_south_east_sequence = 7;
-                        queen_sequences.forEach(sequence => sequence.push(current_piece_location));
+                        queen_sequences.forEach((sequence) => sequence.push(current_piece_location));
                         // attacker_moves = search_queen_moves(threat_location);
 
                         // Get north sequence
@@ -1129,7 +1136,7 @@ function check_if_piece_is_pinned(piece_location) {
                         let bishop_north_east_sequence = 1;
                         let bishop_south_west_sequence = 2;
                         let bishop_south_east_sequence = 3;
-                        bishop_sequences.forEach(sequence => sequence.push(current_piece_location));
+                        bishop_sequences.forEach((sequence) => sequence.push(current_piece_location));
 
                         // Get north east seauence
                         cur_row = Number(row) + 1;
@@ -1197,7 +1204,7 @@ function check_if_piece_is_pinned(piece_location) {
                         let rook_south_sequence = 1;
                         let rook_east_sequence = 2;
                         let rook_west_sequence = 3;
-                        rook_sequences.forEach(sequence => sequence.push(current_piece_location));
+                        rook_sequences.forEach((sequence) => sequence.push(current_piece_location));
 
                         // Get north sequence
                         for (let cur_row = Number(row) + 1; cur_row <= 8; cur_row++) {
@@ -1254,7 +1261,7 @@ function check_if_piece_is_pinned(piece_location) {
     });
 
     moves = Array.from(new Set([].concat(...moves)));
-    moves = moves.filter(move => move != "");
+    moves = moves.filter((move) => move != "");
     return moves;
 }
 
@@ -1271,13 +1278,13 @@ function remove_from_pinned_list(sequence, king_location) {
     for (let move = 0; move < sequence.length; move++) {
         const move_square = document.querySelector(`[data-location="${sequence[move]}"]`);
         const square_piece = move_square.childNodes[0];
-        if (square_piece.getAttribute('id') == "king") {
+        if (square_piece.getAttribute("id") == "king") {
             king_index = move;
             break;
         }
     }
 
-    for (let move = king_index+1; move < sequence.length; move++) {
+    for (let move = king_index + 1; move < sequence.length; move++) {
         sequence[move] = "";
     }
     return sequence;

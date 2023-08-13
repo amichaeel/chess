@@ -1,6 +1,8 @@
 /* This script contains all functions related to event listeners */
 
 let is_current_player_piece;
+let active_piece;
+let active_square;
 
 function hightlight_square(e) {
     e.preventDefault();
@@ -18,8 +20,6 @@ function hightlight_square(e) {
         square.classList.add("highlighted-dark");
     }
 }
-
-let active_piece;
 
 function select_piece(e) {
     e.preventDefault();
