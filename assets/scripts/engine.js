@@ -28,26 +28,26 @@ function change_player() {
     threat = check_for_check();
 }
 
-function search(current_piece, current_square, piece_element) {
+function search(current_piece, current_square, piece_element, bypass, max_bypass, attack_only) {
     let moves_found;
     switch (current_piece) {
         case "pawn":
-            moves_found = search_pawn_moves(piece_element, current_square);
+            moves_found = search_pawn_moves(piece_element, current_square, attack_only);
             break;
         case "rook":
-            moves_found = search_rook_moves(current_square);
+            moves_found = search_rook_moves(current_square, bypass, max_bypass);
             break;
         case "bishop":
-            moves_found = search_bishop_moves(current_square);
+            moves_found = search_bishop_moves(current_square, bypass, max_bypass);
             break;
         case "knight":
             moves_found = search_knight_moves(current_square);
             break;
         case "queen":
-            moves_found = search_queen_moves(current_square);
+            moves_found = search_queen_moves(current_square, bypass, max_bypass);
             break;
         case "king":
-            moves_found = search_king_moves(current_square);
+            moves_found = search_king_moves(current_square, bypass, max_bypass);
             break;
     }
 
@@ -72,11 +72,11 @@ function valid_start(piece, piece_color, square) {
                 if (pawn_col == threat_col) {
                     moves_allowed = search(current_piece, current_square, piece);
                     current_available_moves = moves_allowed;
-                } else {
-                    moves_allowed = search(current_piece, current_square, piece);
-                    moves_allowed = moves_allowed.filter((move) => pinned.includes(move));
-                    current_available_moves = moves_allowed;
                 }
+            } else {
+                moves_allowed = search(current_piece, current_square, piece);
+                moves_allowed = moves_allowed.filter((move) => pinned.includes(move));
+                current_available_moves = moves_allowed;
             }
         } else if (!is_under_check) {
             moves_allowed = search(current_piece, current_square, piece);
@@ -90,7 +90,8 @@ function valid_start(piece, piece_color, square) {
             moves_to_get_out_of_check = get_out_of_check();
             moves_allowed = search(current_piece, current_square, piece);
             if (current_piece == "king") {
-                attacked_sqs = find_attacked_squares();
+
+                attacked_sqs = all_dangerous_squares();
                 const set = new Set([].concat(...attacked_sqs));
                 let king_moves = moves_allowed.filter((move) => !set.has(move));
                 current_available_moves = king_moves;
@@ -154,7 +155,7 @@ function move_current_piece(target_square) {
     }
 }
 
-function search_pawn_moves(piece_element, current_square) {
+function search_pawn_moves(piece_element, current_square, attack_only) {
     const pawn_has_moved = piece_element.getAttribute("data-moved") == "true" ? true : false;
     const moves = [];
     const col = current_square[0];
@@ -167,6 +168,25 @@ function search_pawn_moves(piece_element, current_square) {
         const current_column_index = column_letter.indexOf(col);
         const left_col = column_letter[current_column_index - 1];
         const right_col = column_letter[current_column_index + 1];
+
+        if (attack_only) {
+            if (!is_col_of_bounds(left_col)) {
+                left_diag_square = document.querySelector(`[data-location="${left_col}${Number(row) + 1}"]`);
+            }
+            if (!is_col_of_bounds(right_col)) {
+                right_diag_square = document.querySelector(`[data-location="${right_col}${Number(row) + 1}"]`);
+            }
+
+            if (left_diag_square != undefined) {
+                moves.push(left_diag_square.getAttribute("data-location"));
+            }
+    
+            if (right_diag_square != undefined) {
+                moves.push(right_diag_square.getAttribute("data-location"));
+            }
+
+            return moves;
+        }
 
         if (!is_col_of_bounds(left_col)) {
             left_diag_square = document.querySelector(`[data-location="${left_col}${Number(row) + 1}"]`);
@@ -199,6 +219,25 @@ function search_pawn_moves(piece_element, current_square) {
         const current_column_index = column_letter.indexOf(col);
         const left_col = column_letter[current_column_index + 1];
         const right_col = column_letter[current_column_index - 1];
+
+        if (attack_only) {
+            if (!is_col_of_bounds(left_col)) {
+                left_diag_square = document.querySelector(`[data-location="${left_col}${Number(row) - 1}"]`);
+            }
+            if (!is_col_of_bounds(right_col)) {
+                right_diag_square = document.querySelector(`[data-location="${right_col}${Number(row) - 1}"]`);
+            }
+
+            if (left_diag_square != undefined) {
+                moves.push(left_diag_square.getAttribute("data-location"));
+            }
+    
+            if (right_diag_square != undefined) {
+                moves.push(right_diag_square.getAttribute("data-location"));
+            }
+
+            return moves;
+        }
 
         if (!is_col_of_bounds(left_col)) {
             left_diag_square = document.querySelector(`[data-location="${left_col}${Number(row) - 1}"]`);
@@ -248,7 +287,7 @@ function is_row_out_of_bounds(row) {
     return false;
 }
 
-function search_rook_moves(current_square) {
+function search_rook_moves(current_square, bypass, max_bypass) {
     const moves = [];
     const col = current_square[0];
     const row = current_square[1];
@@ -258,7 +297,7 @@ function search_rook_moves(current_square) {
     // Search above
     for (let cur_row = Number(row) + 1; cur_row <= 8; cur_row++) {
         const square_element = document.querySelector(`[data-location="${col}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -267,7 +306,7 @@ function search_rook_moves(current_square) {
     // Search below
     for (let cur_row = Number(row) - 1; cur_row >= 1; cur_row--) {
         const square_element = document.querySelector(`[data-location="${col}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -277,7 +316,7 @@ function search_rook_moves(current_square) {
     for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -287,7 +326,7 @@ function search_rook_moves(current_square) {
     for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -296,7 +335,7 @@ function search_rook_moves(current_square) {
     return moves;
 }
 
-function search_bishop_moves(current_square) {
+function search_bishop_moves(current_square, bypass, max_bypass) {
     const moves = [];
     const col = current_square[0];
     const row = current_square[1];
@@ -309,7 +348,7 @@ function search_bishop_moves(current_square) {
     for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -321,7 +360,7 @@ function search_bishop_moves(current_square) {
     for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -333,7 +372,7 @@ function search_bishop_moves(current_square) {
     for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -345,7 +384,7 @@ function search_bishop_moves(current_square) {
     for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -389,7 +428,7 @@ function search_knight_moves(current_square) {
     continue_searching(square_element, moves);
     return moves;
 }
-function search_queen_moves(current_square) {
+function search_queen_moves(current_square, bypass, max_bypass) {
     const moves = [];
     const col = current_square[0];
     const row = current_square[1];
@@ -399,7 +438,7 @@ function search_queen_moves(current_square) {
     // Search above
     for (let cur_row = Number(row) + 1; cur_row <= 8; cur_row++) {
         const square_element = document.querySelector(`[data-location="${col}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -408,7 +447,7 @@ function search_queen_moves(current_square) {
     // Search below
     for (let cur_row = Number(row) - 1; cur_row >= 1; cur_row--) {
         const square_element = document.querySelector(`[data-location="${col}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -418,7 +457,7 @@ function search_queen_moves(current_square) {
     for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -428,7 +467,7 @@ function search_queen_moves(current_square) {
     for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -441,7 +480,7 @@ function search_queen_moves(current_square) {
     for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -453,7 +492,7 @@ function search_queen_moves(current_square) {
     for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -465,7 +504,7 @@ function search_queen_moves(current_square) {
     for (let cur_col = current_column_index + 1; cur_col <= 8; cur_col++) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -477,7 +516,7 @@ function search_queen_moves(current_square) {
     for (let cur_col = current_column_index - 1; cur_col >= 1; cur_col--) {
         const cur_col_letter = column_letter[cur_col];
         const square_element = document.querySelector(`[data-location="${cur_col_letter}${cur_row}"]`);
-        const can_continue_searching = continue_searching(square_element, moves);
+        const can_continue_searching = continue_searching(square_element, moves, bypass, max_bypass);
         if (!can_continue_searching) {
             break;
         }
@@ -516,9 +555,20 @@ function search_king_moves(current_square) {
     return moves;
 }
 
-function continue_searching(square_element, moves, bypass) {
+function continue_searching(square_element, moves, bypass, max_bypass) {
     if (square_element == null) {
         return false;
+    }
+
+    if (max_bypass) {
+        if (square_element.hasChildNodes()) {
+            const piece = square_element.childNodes[0];
+            if (piece.classList.contains(`${current_player}_piece`) && piece.getAttribute("id") != "king") {
+                return false;
+            }
+        }
+        moves.push(square_element.getAttribute("data-location"))
+        return true;
     }
 
     if (square_element.hasChildNodes() && bypass) {
@@ -906,6 +956,26 @@ function get_out_of_check() {
     return moves;
 }
 
+function all_dangerous_squares() {
+    // This function returns all squares that are in line with opponents pieces, regardless of what is in its way.
+    const max_bypass = true;
+    const bypass = false;
+    const attack_only = true;
+    let moves = []
+    const squares = chessboard.childNodes;
+
+    squares.forEach((square) => {
+        if (square.hasChildNodes()) {
+            const piece = square.childNodes[0];
+            if (!piece.classList.contains(`${current_player}_piece`)) {
+                const piece_id = piece.getAttribute("id");
+                const square_location = square.getAttribute("data-location")
+                moves.push(search(piece_id, square_location, piece, bypass, max_bypass, attack_only));
+            }
+        }
+    })
+    return moves;
+}
 function check_if_piece_is_pinned(piece_location) {
     let bypass = true;
     const squares = chessboard.childNodes;
