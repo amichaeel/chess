@@ -1,4 +1,4 @@
-1) pinned piece behavior
+
 2) check if its check mate.
 3) check if its stalemate.
 4) pawn promotion

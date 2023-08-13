@@ -5,6 +5,7 @@ let current_square;
 let current_available_moves;
 let is_under_check;
 let threat;
+console.log("~~~~~~~~~CHESS LITE V1.0~~~~~~~~~~~~")
 
 function change_player() {
     if (current_player == "white") {
@@ -63,12 +64,20 @@ function valid_start(piece, piece_color, square) {
         let attacked_sqs;
 
         const pinned = check_if_piece_is_pinned(square);
-        console.log(pinned)
 
         if (pinned.includes(current_square) && pinned.length > 1 && pinned.length < 4 && current_piece != "king") {
-            moves_allowed = search(current_piece, current_square, piece);
-            moves_allowed = moves_allowed.filter((move) => pinned.includes(move));
-            current_available_moves = moves_allowed;
+            if (current_piece == "pawn") {
+                const pawn_col = square[0];
+                const threat_col = pinned[0][0];
+                if (pawn_col == threat_col) {
+                    moves_allowed = search(current_piece, current_square, piece);
+                    current_available_moves = moves_allowed;
+                } else {
+                    moves_allowed = search(current_piece, current_square, piece);
+                    moves_allowed = moves_allowed.filter((move) => pinned.includes(move));
+                    current_available_moves = moves_allowed;
+                }
+            }
         } else if (!is_under_check) {
             moves_allowed = search(current_piece, current_square, piece);
             if (current_piece == "king") {
@@ -1036,7 +1045,6 @@ function check_if_piece_is_pinned(piece_location) {
                         check_for_pin_piece_removal(queen_sequences[queen_south_west_sequence], king_location);
 
                         // Loop through all found sequences, add sequences that contains kings location
-                        // console.log("TESTING - Piece is located at ", piece_location, " and king is located at ", king_location);
                         for (let sequence of queen_sequences) {
                             if (sequence.includes(king_location) && sequence.includes(piece_location)) {
                                 moves.push(sequence);
