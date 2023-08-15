@@ -4,6 +4,7 @@ let is_current_player_piece;
 let active_piece;
 let active_square;
 let selected = false;
+let is_dragging = false;
 
 function hightlight_square(e) {
     e.preventDefault();
@@ -22,12 +23,17 @@ function hightlight_square(e) {
     }
 }
 
+function add_available_square_highlight(e) {
+    console.log(e)
+}
+
 function select_piece(e) {
     e.preventDefault();
     if (e.button == 1 || e.button == 2) {
         selected = false;
         return;
     }
+    is_dragging = true;
     selected = true;
     let temp = e.target;
     const piece_color = temp.getAttribute("class").includes("white") ? "white" : "black";
@@ -37,9 +43,9 @@ function select_piece(e) {
     active_piece.addEventListener("mousemove", move_piece);
 
 
-    // Movement logic
-    const x = e.clientX - 75;
-    const y = e.clientY - 85;
+    // Movement log
+    const x = e.clientX - 70;
+    const y = e.clientY - 65;
     active_piece.style.position = "absolute";
     active_piece.style.left = `${x}px`;
     active_piece.style.top = `${y}px`;
@@ -59,8 +65,8 @@ function move_piece(e) {
     const maxY = chessboard.offsetTop + chessboard.clientHeight - 75;
 
     if (active_piece) {
-        const x = e.clientX - 75;
-        const y = e.clientY - 85;
+        const x = e.clientX - 70;
+        const y = e.clientY - 65;
         active_piece.style.position = "absolute";
 
 
@@ -94,6 +100,7 @@ function move_piece(e) {
 
 function release_piece(e) {
     const squares = chessboard.childNodes;
+    is_dragging = false;
     if (active_piece) {
         squares.forEach((square) => {
             const rect = square.getBoundingClientRect();

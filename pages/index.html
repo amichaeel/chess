@@ -1,26 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chess</title>
-    <link rel="stylesheet" href="../assets/styles/styles.css" />
-  </head>
-  <body>
-    <div id="coords">
-      <coords class="ranks"><coord>1</coord><coord>2</coord><coord>3</coord><coord>4</coord><coord>5</coord><coord>6</coord><coord>7</coord><coord>8</coord></coords>
-      <coords class="files"><coord>a</coord><coord>b</coord><coord>c</coord><coord>d</coord><coord>e</coord><coord>f</coord><coord>g</coord><coord>h</coord></coords>
-    </div>
-    <div id="main">
-      <div id="chessboard"></div>
-    </div>
-    <div id="promotion-menu"></div>
-    <script src="../assets/scripts/audio.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-    <script src="../assets/scripts/listeners.js"></script>
-    <script src="../assets/scripts/pieces.js"></script>
-    <script src="../assets/scripts/chessboard.js"></script>
-    <script src="../assets/scripts/engine.js"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Chess</title>
+        <link rel="stylesheet" href="../assets/styles/styles.css" />
+        <link rel="stylesheet" href="../assets/styles/pieces.css" />
+    </head>
+    <body>
+        <div id="main">
+            <board id="chessboard"></board>
+        </div>
+        <div id="promotion-menu"></div>
+        <script src="../assets/scripts/audio.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+        <script src="../assets/scripts/pieces.js"></script>
+        <script src="../assets/scripts/controller.js"></script>
+        <script src="../assets/scripts/initializer.js"></script>
+        <script src="../assets/scripts/traverse.js"></script>
+    </body>
 </html>

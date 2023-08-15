@@ -1,12 +1,11 @@
 const chessboard = document.querySelector("#chessboard");
+var squares;
 const column_letter = ["", "a", "b", "c", "d", "e", "f", "g", "h", ""];
 
 function init_chessboard() {
     for (let row = 8; row > 0; row--) {
         for (let col = 1; col <= 8; col++) {
-            const square = document.createElement("div");
-            square.classList.add((row + col) % 2 == 0 ? "light-square" : "dark-square");
-            square.classList.add("square");
+            const square = document.createElement("square");
             square.dataset.location = `${column_letter[col]}${row}`;
             chessboard.appendChild(square);
         }
@@ -14,7 +13,7 @@ function init_chessboard() {
 }
 
 function init_pieces() {
-    const squares = chessboard.childNodes;
+    squares = chessboard.childNodes;
 
     // initialize black pieces
     const black_pieces = [
@@ -67,36 +66,37 @@ function init_pieces() {
 }
 
 function init_event_listeners() {
-    const squares = chessboard.childNodes;
+    squares = chessboard.childNodes;
 
     for (let square of squares) {
-        square.addEventListener("contextmenu", hightlight_square);
+        square.addEventListener("contextmenu", highlight);
+        square.addEventListener("click", select)
 
         if (square.hasChildNodes()) {
             const piece = square.childNodes[0];
             piece.dataset.moved = false;
-            piece.addEventListener("mousedown", select_piece);
-            piece.addEventListener("mouseup", release_piece);
+            // piece.addEventListener("click", select);
+            // piece.addEventListener("mouseup", release_piece);
             // piece.addEventListener('click', select_piece)
         }
     }
 }
 
 function init_coords() {
-    const files_element = document.querySelector(".files");
-    const ranks_element = document.querySelector(".ranks");
-    const files = files_element.childNodes;
-    const ranks = ranks_element.childNodes;
+    // const files_element = document.querySelector(".files");
+    // const ranks_element = document.querySelector(".ranks");
+    // const files = files_element.childNodes;
+    // const ranks = ranks_element.childNodes;
 
-    for (let i = 0; i < files.length; i++) {
-        if (i % 2 == 0) {
-            files[i].classList.add("coords-dark");
-            ranks[i].classList.add("coords-light");
-        } else {
-            files[i].classList.add("coords-light");
-            ranks[i].classList.add("coords-dark");
-        }
-    }
+    // for (let i = 0; i < files.length; i++) {
+    //     if (i % 2 == 0) {
+    //         files[i].classList.add("coords-light");
+    //         ranks[i].classList.add("coords-dark");
+    //     } else {
+    //         files[i].classList.add("coords-dark");
+    //         ranks[i].classList.add("coords-light");
+    //     }
+    // }
 }
 
 function init() {
