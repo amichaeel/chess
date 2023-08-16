@@ -10,6 +10,9 @@ var move_dest;
 var conditions;
 
 function change_player() {
+    // Reset en passant
+    reset_enpassant();
+    determine_conditions();
     current_player = current_player == "white" ? "black" : "white";
 }
 
@@ -21,7 +24,6 @@ function initialize_controller(e) {
     piece_location = square_element.getAttribute("data-location");
     move_init = square_element;
     square_element.classList.add("selected");
-    
 
     // The following will be implemented in another function.
     moves = begin_search(piece_color, piece_name, piece_element, piece_location);
@@ -77,22 +79,23 @@ function release(e) {
     if (dest_element.hasChildNodes()) {
         // If destination has a piece, delete piece from destination and add selected piece
         dest_element.innerHTML = "";
-        dest_element.append(piece_element);
         capture.play();
+    }
+
+    // If destionation is empty, simply add piece.
+    if (piece_name == "pawn") {
+        const move_init_location = move_init.getAttribute("data-location");
+        const move_dest_location = move_dest.getAttribute("data-location");
+        const init_col = move_init_location[0];
+        const dest_col = move_dest_location[0];
+        const dest_row = Number(move_dest_location[1]);
+        determine_pawn_conditions(move_init_location, move_dest_location, init_col, dest_col, dest_row, dest_element);
     } else {
-        // If destionation is empty, simply add piece.
-        dest_element.append(piece_element);
         move.play();
     }
 
-    if (piece_name == "pawn") {
-        // If a pawn was selected and moved, set data-moved to true.
-        piece_element.setAttribute("data-moved", true);
-
-        // Here, we can also check if the pawn is capable of promotion.
-        pawn_promotion(dest_element, dest_location)
-
-    }
+    // Append piece to destination square
+    dest_element.append(piece_element);
 
     // Remove all event listeners from the previous possible moves
     for (let move of moves) {

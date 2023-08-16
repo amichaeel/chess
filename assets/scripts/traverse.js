@@ -78,8 +78,11 @@ function find_pawn_moves(color, piece_element, piece_location) {
     const pawn_moved = piece_element.getAttribute("data-moved") == "true" ? true : false;
 
     if (color == "white") {
-        // If square above is exists and is empty, add as move.
+        const left_square = document.querySelector(`[data-location="${column_letter[col_index - 1]}${row}"]`);
+        const right_square = document.querySelector(`[data-location="${column_letter[col_index + 1]}${row}"]`);
         const sq_above = document.querySelector(`[data-location="${col}${Number(row) + 1}"]`);
+
+        // If square above is exists and is empty, add as move.
         if (sq_above != null && !sq_above.hasChildNodes()) {
             const move = `${col}${Number(row) + 1}`;
             moves.push(move);
@@ -109,9 +112,27 @@ function find_pawn_moves(color, piece_element, piece_location) {
             const move = `${east_col}${Number(row) + 1}`;
             moves.push(move);
         }
+
+        // Determine if en passant is possible.
+        if (left_square != null && left_square.hasChildNodes()) {
+            const piece = left_square.firstChild;
+            if (piece.getAttribute("data-enpassant") == "true") {
+                // Left square is enpassant. We can take and go above it.
+                moves.push(`${column_letter[col_index - 1]}${Number(row) + 1}`);
+            }
+        }
+
+        if (right_square != null && right_square.hasChildNodes()) {
+            const piece = right_square.firstChild;
+            if (piece.getAttribute("data-enpassant") == "true") {
+                moves.push(`${column_letter[col_index + 1]}${Number(row) + 1}`);
+            }
+        }
     } else {
         // If square above is exists and is empty, add as move.
         const sq_above = document.querySelector(`[data-location="${col}${Number(row) - 1}"]`);
+        const left_square = document.querySelector(`[data-location="${column_letter[col_index + 1]}${row}"]`);
+        const right_square = document.querySelector(`[data-location="${column_letter[col_index - 1]}${row}"]`);
         if (sq_above != null && !sq_above.hasChildNodes()) {
             const move = `${col}${Number(row) - 1}`;
             moves.push(move);
@@ -140,6 +161,22 @@ function find_pawn_moves(color, piece_element, piece_location) {
         if (ne_square != null && ne_square.hasChildNodes() && !ne_square.firstChild.classList.contains(`${color}_piece`)) {
             const move = `${east_col}${Number(row) - 1}`;
             moves.push(move);
+        }
+
+        // Determine if en passant is possible.
+        if (left_square != null && left_square.hasChildNodes()) {
+            const piece = left_square.firstChild;
+            if (piece.getAttribute("data-enpassant") == "true") {
+                // Left square is enpassant. We can take and go above it.
+                moves.push(`${column_letter[col_index + 1]}${Number(row) - 1}`);
+            }
+        }
+
+        if (right_square != null && right_square.hasChildNodes()) {
+            const piece = right_square.firstChild;
+            if (piece.getAttribute("data-enpassant") == "true") {
+                moves.push(`${column_letter[col_index - 1]}${Number(row) - 1}`);
+            }
         }
     }
     return moves;
