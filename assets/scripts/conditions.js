@@ -19,7 +19,6 @@ function promotion_menu() {
     const promotion_menu_element = document.createElement("div");
     const shadow = document.querySelector('shadow');
     shadow.style.visibility = "visible"
-    promotion_menu_element.classList.add("promotion-menu")
     pawn_dest_element.append(promotion_menu_element);
 
     const white_promotion_pieces = [white_queen, white_knight, white_rook, white_bishop];
@@ -27,6 +26,7 @@ function promotion_menu() {
     
     switch(current_player) {
         case "white":
+            promotion_menu_element.classList.add("promotion-menu-white");
             for (const piece of white_promotion_pieces) {
                 const square = document.createElement("div");
                 square.addEventListener("click", promotion_selection)
@@ -37,6 +37,7 @@ function promotion_menu() {
             pause_game()
             break;
         case "black":
+            promotion_menu_element.classList.add("promotion-menu-black");
             for (const piece of black_promotion_pieces) {
                 const square = document.createElement("div");
                 square.addEventListener("click", promotion_selection)
