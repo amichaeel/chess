@@ -1,6 +1,6 @@
 // The purpose of this file is to return the valid moveset based on the parameters that are given.
 
-function begin_search(color, piece_name, piece_element, piece_location, bypass_self, bypass_all) {
+function begin_search(color, piece_name, piece_element, piece_location, bypass_self, bypass_all, pawn_attack_only) {
     var moves = [];
 
     switch (piece_name) {
@@ -11,7 +11,7 @@ function begin_search(color, piece_name, piece_element, piece_location, bypass_s
             moves = find_knight_moves(color, piece_location);
             break;
         case "pawn":
-            moves = find_pawn_moves(color, piece_element, piece_location);
+            moves = find_pawn_moves(color, piece_element, piece_location, pawn_attack_only);
             break;
         case "rook":
             moves = find_rook_moves(color, piece_location, bypass_self, bypass_all);
@@ -69,7 +69,7 @@ function continue_search(color, moves, square_element, bypass_self, bypass_all) 
     }
 }
 
-function find_pawn_moves(color, piece_element, piece_location) {
+function find_pawn_moves(color, piece_element, piece_location, pawn_attack_only) {
     const moves = [];
     const col = piece_location[0];
     const row = piece_location[1];
@@ -78,6 +78,23 @@ function find_pawn_moves(color, piece_element, piece_location) {
     const pawn_moved = piece_element.getAttribute("data-moved") == "true" ? true : false;
 
     if (color == "white") {
+        if (pawn_attack_only) {
+            const west_col = column_letter[col_index - 1];
+            const east_col = column_letter[col_index + 1];
+            const nw_square = document.querySelector(`[data-location="${west_col}${Number(row) + 1}"]`);
+            const ne_square = document.querySelector(`[data-location="${east_col}${Number(row) + 1}"]`);
+
+            if (nw_square != null && nw_square.hasChildNodes() && !nw_square.firstChild.classList.contains(`${color}_piece`)) {
+                const move = `${west_col}${Number(row) + 1}`;
+                moves.push(move);
+            }
+
+            if (ne_square != null && ne_square.hasChildNodes() && !ne_square.firstChild.classList.contains(`${color}_piece`)) {
+                const move = `${east_col}${Number(row) + 1}`;
+                moves.push(move);
+            }
+            return moves;
+        }
         const left_square = document.querySelector(`[data-location="${column_letter[col_index - 1]}${row}"]`);
         const right_square = document.querySelector(`[data-location="${column_letter[col_index + 1]}${row}"]`);
         const sq_above = document.querySelector(`[data-location="${col}${Number(row) + 1}"]`);
@@ -130,6 +147,23 @@ function find_pawn_moves(color, piece_element, piece_location) {
         }
     } else {
         // If square above is exists and is empty, add as move.
+        if (pawn_attack_only) {
+            const west_col = column_letter[col_index + 1];
+            const east_col = column_letter[col_index - 1];
+            const nw_square = document.querySelector(`[data-location="${west_col}${Number(row) - 1}"]`);
+            const ne_square = document.querySelector(`[data-location="${east_col}${Number(row) - 1}"]`);
+
+            if (nw_square != null && nw_square.hasChildNodes() && !nw_square.firstChild.classList.contains(`${color}_piece`)) {
+                const move = `${west_col}${Number(row) - 1}`;
+                moves.push(move);
+            }
+
+            if (ne_square != null && ne_square.hasChildNodes() && !ne_square.firstChild.classList.contains(`${color}_piece`)) {
+                const move = `${east_col}${Number(row) - 1}`;
+                moves.push(move);
+            }
+            return moves;
+        }
         const sq_above = document.querySelector(`[data-location="${col}${Number(row) - 1}"]`);
         const left_square = document.querySelector(`[data-location="${column_letter[col_index + 1]}${row}"]`);
         const right_square = document.querySelector(`[data-location="${column_letter[col_index - 1]}${row}"]`);

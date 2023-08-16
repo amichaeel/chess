@@ -41,7 +41,6 @@ function reset_enpassant() {
 }
 
 function pawn_promotion(dest_element, dest_location) {
-    console.log(dest_element, dest_location);
     pawn_dest_element = dest_element;
     // Validate the destination
     if (current_player == "white" && dest_location[1] == "8") {
@@ -102,4 +101,40 @@ function promotion_selection(e) {
     promote.play();
     resume_game();
     return;
+}
+
+function determine_check() {
+    var moves = [];
+    const opponent_color = current_player == "white" ? "black" : "white";
+
+    // Get king location
+    // Get all moves from opponent
+    for (const square of squares) {
+        if (square.hasChildNodes()) {
+            const piece = square.firstChild;
+            if (piece.classList.contains(`${opponent_color}_piece`)) {
+                const piece_id = piece.getAttribute("id")
+                const piece_location = square.getAttribute("data-location")
+                moves.push(begin_search(opponent_color, piece_id, piece, piece_location, false, false, true))
+            } else if (piece.getAttribute("id") == "king") {
+                king_element = square;
+                king_location = square.getAttribute("data-location");
+            }
+        }
+    }
+
+    moves = new Set([].concat(...moves));
+    console.log(moves);
+
+    if (moves.has(king_location)) {
+        king_element.classList.add("check");
+        check.play();
+        return true;
+    }
+
+    return false;
+}
+
+function remove_check_styling() {
+    king_element.classList.remove("check");
 }

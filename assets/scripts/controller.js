@@ -1,4 +1,5 @@
 var current_player = "white";
+var under_check = false;
 var moves = [];
 var piece_element;
 var square_element;
@@ -7,13 +8,20 @@ var piece_location;
 var piece_color;
 var move_init;
 var move_dest;
-var conditions;
+var under_check;
+var king_location;
+var king_element;
 
 function change_player() {
-    // Reset en passant
+    // If player was in check, remove check styling.
+    if (under_check) remove_check_styling();
+    
+    // Reset any enpassant conditions
     reset_enpassant();
-    determine_conditions();
     current_player = current_player == "white" ? "black" : "white";
+
+    // Check if current player is under check.
+    under_check = determine_check();
 }
 
 function initialize_controller(e) {
