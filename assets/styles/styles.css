@@ -9,6 +9,16 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    position: relative;
+}
+
+shadow {
+    background: rgba(22,21,18,.7);
+    position: absolute;
+    visibility: hidden;
+    width: 100%;
+    height: 100%;
+    z-index: 500;
 }
 
 board {
@@ -17,11 +27,50 @@ board {
     grid-template-columns: repeat(8, 120px);
     grid-template-rows: repeat(8, 120px);
     border: 2px solid #333;
+    position: relative;
 }
 
 square {
     position: relative;
     padding-bottom: calc(12.5% - 2px);
+}
+
+.promotion-menu {
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 400%;
+    z-index: 999;
+}
+
+.menu-item {
+    position: relative;
+    height: 25%;
+    pointer-events: all !important;
+    border-radius: 50%;
+    background-color: #b0b0b0;
+    box-shadow: inset 0 0 25px 3px gray;
+    transition: all 150ms;
+}
+
+.menu-item:hover {
+    box-shadow: inset 0 0 48px 8px #d64f00;
+    border-radius: 0%
+}
+
+div.menu-item piece {
+    transform: scale(0.9);
+    transition: transform 0.1s ease-in;
+}
+
+div.menu-item piece:hover {
+    transform: scale(1);
+    border-radius: 0%;
+}
+.pause {
+    pointer-events: none;
 }
 
 .available {
@@ -50,7 +99,7 @@ square {
 }
 
 square.available:hover {
-    background-color: rgb(168, 169, 125);
+    background-color: rgb(168, 169, 125) !important;
 }
 
 square.available-with-piece:hover {

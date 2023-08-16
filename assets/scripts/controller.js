@@ -7,6 +7,7 @@ var piece_location;
 var piece_color;
 var move_init;
 var move_dest;
+var conditions;
 
 function change_player() {
     current_player = current_player == "white" ? "black" : "white";
@@ -20,7 +21,9 @@ function initialize_controller(e) {
     piece_location = square_element.getAttribute("data-location");
     move_init = square_element;
     square_element.classList.add("selected");
+    
 
+    // The following will be implemented in another function.
     moves = begin_search(piece_color, piece_name, piece_element, piece_location);
 
     // Add click event listener and highlighting to available moves
@@ -67,23 +70,28 @@ function drag(e) {}
 
 function release(e) {
     // Get the location of destination square
-    const dest = e.target.parentElement.getAttribute("data-location") != null ? e.target.parentElement : e.target;
-    move_dest = dest;
+    const dest_element = e.target.parentElement.getAttribute("data-location") != null ? e.target.parentElement : e.target;
+    const dest_location = dest_element.getAttribute("data-location");
+    move_dest = dest_element;
 
-    if (dest.hasChildNodes()) {
+    if (dest_element.hasChildNodes()) {
         // If destination has a piece, delete piece from destination and add selected piece
-        dest.innerHTML = "";
-        dest.append(piece_element);
+        dest_element.innerHTML = "";
+        dest_element.append(piece_element);
         capture.play();
     } else {
         // If destionation is empty, simply add piece.
-        dest.append(piece_element);
+        dest_element.append(piece_element);
         move.play();
     }
 
     if (piece_name == "pawn") {
         // If a pawn was selected and moved, set data-moved to true.
         piece_element.setAttribute("data-moved", true);
+
+        // Here, we can also check if the pawn is capable of promotion.
+        pawn_promotion(dest_element, dest_location)
+
     }
 
     // Remove all event listeners from the previous possible moves
@@ -105,6 +113,14 @@ function release(e) {
     // Reset controller and change player
     reset_controller();
     change_player();
+}
+
+function pause_game() {
+    chessboard.classList.add("pause");
+}
+
+function resume_game() {
+    chessboard.classList.remove("pause");
 }
 
 function reset_controller() {

@@ -1,5 +1,32 @@
+initializer
+- Responsible for generating the board and event listeners
 
-2) check if its check mate.
-3) check if its stalemate.
-4) pawn promotion
-4) castling and en passant behavior.
+controller
+- Responsible for handlings user input, which is done through clicking and dragging.
+- Also handles the addition and removal of event listeners when necessary. 
+
+conditions
+- Responsible for determining condition state of the game.
+- Also responsible for determining if a selected piece is under a specifc condition such as being pinned.
+- The controller will send input to the conditions and conditions will retun back what is possible based on the condition.
+
+traverse
+- Responsible for return what moves a piece can do based on its conditions.
+
+
+
+
+When a player makes a move, we check for a check as soon as the player is changed. When and where should that be handled?
+When we change players, we can call get_conditions()
+This will tell us if we are in check, and return back what squares of ours is pinned to the king.
+WHen we select this piece to make a piece, we know its pinned and therefore it cannot move. 
+
+If we are indeed in check, we will also know what squares can be used to block the check. We can filter out moves knowing this when a user selects a piece.
+
+Anytime we try to move our king, we need to filter out moves that are being attacked by the opponent.
+By knowing this, we can determine what moves are valid, as well as if a castle can occur.
+
+To determine if a piece is being pinned:
+- Determine opponent path of attack, bypassing current players pieces.
+- In these paths, we do not want to include empty squares. s
+- If a queen is present in this path, the piece that comes right before it is the pinned piece and cannot be moved.
