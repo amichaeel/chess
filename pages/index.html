@@ -9,9 +9,13 @@
         <link rel="stylesheet" href="../assets/styles/pieces.css" />
     </head>
     <body>
-        <div id="main">
-            <shadow></shadow>
-            <board id="chessboard"></board>
+        <div id="main-wrap">
+            <div id="board-wrap">
+                <shadow></shadow>
+                <coords class="ranks"><coord>1</coord><coord>2</coord><coord>3</coord><coord>4</coord><coord>5</coord><coord>6</coord><coord>7</coord><coord>8</coord></coords>
+                <coords class="files"><coord>a</coord><coord>b</coord><coord>c</coord><coord>d</coord><coord>e</coord><coord>f</coord><coord>g</coord><coord>h</coord></coords>
+                <board id="chessboard"></board>
+            </div>
         </div>
         <script src="../assets/scripts/audio.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>

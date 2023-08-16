@@ -75,28 +75,25 @@ function init_event_listeners() {
         if (square.hasChildNodes()) {
             const piece = square.childNodes[0];
             piece.dataset.moved = false;
-            // piece.addEventListener("click", select);
-            // piece.addEventListener("mouseup", release_piece);
-            // piece.addEventListener('click', select_piece)
         }
     }
 }
 
 function init_coords() {
-    // const files_element = document.querySelector(".files");
-    // const ranks_element = document.querySelector(".ranks");
-    // const files = files_element.childNodes;
-    // const ranks = ranks_element.childNodes;
+    const files_element = document.querySelector(".files");
+    const ranks_element = document.querySelector(".ranks");
+    const files = files_element.childNodes;
+    const ranks = ranks_element.childNodes;
 
-    // for (let i = 0; i < files.length; i++) {
-    //     if (i % 2 == 0) {
-    //         files[i].classList.add("coords-light");
-    //         ranks[i].classList.add("coords-dark");
-    //     } else {
-    //         files[i].classList.add("coords-dark");
-    //         ranks[i].classList.add("coords-light");
-    //     }
-    // }
+    for (let i = 0; i < files.length; i++) {
+        if (i % 2 == 0) {
+            files[i].classList.add("coords-light");
+            ranks[i].classList.add("coords-dark");
+        } else {
+            files[i].classList.add("coords-dark");
+            ranks[i].classList.add("coords-light");
+        }
+    }
 }
 
 function init() {
