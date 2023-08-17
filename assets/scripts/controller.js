@@ -15,7 +15,7 @@ var king_element;
 function change_player() {
     // If player was in check, remove check styling.
     if (under_check) remove_check_styling();
-    
+
     // Reset any enpassant conditions
     reset_enpassant();
     current_player = current_player == "white" ? "black" : "white";
@@ -36,16 +36,22 @@ function initialize_controller(e) {
     // The following will be implemented in another function.
     moves = begin_search(piece_color, piece_name, piece_element, piece_location);
 
-    // Add click event listener and highlighting to available moves
-    for (let move of moves) {
-        const square_element = document.querySelector(`[data-location="${move}"]`);
-        square_element.removeEventListener("click", select);
-        square_element.addEventListener("click", release);
+    if (piece_name == "king") {
+        determine_castling_rights(current_player, piece_location, piece_element, moves);
+    }
 
-        if (square_element.hasChildNodes()) {
-            square_element.classList.add("available-with-piece");
+    // Add click event listener and highlighting to available moves
+    // console.log(moves)
+    for (let move of moves) {
+        // if (move == null) break;
+        const move_element = document.querySelector(`[data-location="${move}"]`);
+        move_element.removeEventListener("click", select);
+        move_element.addEventListener("click", release);
+
+        if (move_element.hasChildNodes()) {
+            move_element.classList.add("available-with-piece");
         } else {
-            square_element.classList.add("available");
+            move_element.classList.add("available");
         }
     }
 }
@@ -81,34 +87,53 @@ function drag(e) {}
 function release(e) {
     // Get the location of destination square
     const dest_element = e.target.parentElement.getAttribute("data-location") != null ? e.target.parentElement : e.target;
-    const dest_location = dest_element.getAttribute("data-location");
     move_dest = dest_element;
+    const dest_location = dest_element.getAttribute("data-location");
+    const move_init_location = move_init.getAttribute("data-location");
+    const move_dest_location = move_dest.getAttribute("data-location");
+    const init_col = move_init_location[0];
+    const dest_col = move_dest_location[0];
+    const dest_row = Number(move_dest_location[1]);
 
-    if (dest_element.hasChildNodes()) {
-        // If destination has a piece, delete piece from destination and add selected piece
-        dest_element.innerHTML = "";
-        capture.play();
-    }
-
-    // If destionation is empty, simply add piece.
     if (piece_name == "pawn") {
-        const move_init_location = move_init.getAttribute("data-location");
-        const move_dest_location = move_dest.getAttribute("data-location");
-        const init_col = move_init_location[0];
-        const dest_col = move_dest_location[0];
-        const dest_row = Number(move_dest_location[1]);
-        determine_pawn_conditions(move_init_location, move_dest_location, init_col, dest_col, dest_row, dest_element);
+        pawn_behavior(move_init_location, move_dest_location, init_col, dest_col, dest_row, dest_element, piece_element);
+    } else if (piece_name == "king") {
+        if (dest_element.hasChildNodes()) {
+            const dest_element_piece = dest_element.firstChild;
+            if (dest_element_piece.getAttribute("id") == "rook" && dest_element_piece.classList.contains(`${current_player}_rook`)) {
+                console.log("Reached")
+                const castle_location = determine_castle_location(move_init_location, dest_location);
+                castle_behavior(castle_location, piece_element, dest_element_piece)
+                castles.play();
+            } else {
+                dest_element.innerHTML = "";
+                dest_elmeent.append(piece_element);
+                capture.play();
+            }
+        } else {
+            dest_element.append(piece_element);
+            move.play();
+        }
     } else {
-        move.play();
+        // Pieces other than pawn or king
+        if (dest_element.hasChildNodes()) {
+            dest_element.innerHTML = "";
+            dest_element.append(piece_element);
+            capture.play();
+        } else {
+            dest_element.append(piece_element);
+            move.play();
+        }
     }
 
-    // Append piece to destination square
-    dest_element.append(piece_element);
+    if (piece_name == "king" || piece_name == "rook" || piece_name == "pawn") {
+        piece_element.setAttribute("data-moved", true);
+    }
 
     // Remove all event listeners from the previous possible moves
     for (let move of moves) {
-        const square_element = document.querySelector(`[data-location="${move}"]`);
-        square_element.removeEventListener("click", release);
+        const move_element = document.querySelector(`[data-location="${move}"]`);
+        move_element.removeEventListener("click", release);
     }
 
     for (let square of squares) {
@@ -148,6 +173,7 @@ function reset_controller() {
     }
 
     for (let move of moves) {
+        if (move == null) break;
         const square = document.querySelector(`[data-location="${move}"]`);
         square.removeEventListener("click", release);
         square.addEventListener("click", select);

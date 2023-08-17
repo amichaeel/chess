@@ -84,12 +84,12 @@ function find_pawn_moves(color, piece_element, piece_location, pawn_attack_only)
             const nw_square = document.querySelector(`[data-location="${west_col}${Number(row) + 1}"]`);
             const ne_square = document.querySelector(`[data-location="${east_col}${Number(row) + 1}"]`);
 
-            if (nw_square != null && nw_square.hasChildNodes() && !nw_square.firstChild.classList.contains(`${color}_piece`)) {
+            if (nw_square != null) {
                 const move = `${west_col}${Number(row) + 1}`;
                 moves.push(move);
             }
 
-            if (ne_square != null && ne_square.hasChildNodes() && !ne_square.firstChild.classList.contains(`${color}_piece`)) {
+            if (ne_square != null) {
                 const move = `${east_col}${Number(row) + 1}`;
                 moves.push(move);
             }
@@ -153,12 +153,12 @@ function find_pawn_moves(color, piece_element, piece_location, pawn_attack_only)
             const nw_square = document.querySelector(`[data-location="${west_col}${Number(row) - 1}"]`);
             const ne_square = document.querySelector(`[data-location="${east_col}${Number(row) - 1}"]`);
 
-            if (nw_square != null && nw_square.hasChildNodes() && !nw_square.firstChild.classList.contains(`${color}_piece`)) {
+            if (nw_square != null) {
                 const move = `${west_col}${Number(row) - 1}`;
                 moves.push(move);
             }
 
-            if (ne_square != null && ne_square.hasChildNodes() && !ne_square.firstChild.classList.contains(`${color}_piece`)) {
+            if (ne_square != null) {
                 const move = `${east_col}${Number(row) - 1}`;
                 moves.push(move);
             }
@@ -420,6 +420,8 @@ function find_queen_moves(color, piece_location, bypass_self, bypass_all) {
 }
 
 function find_king_moves(color, piece_location) {
+    const opponent_color = current_player == "white" ? "black" : "white";
+    const opponent_moves = []
     const moves = [];
     const col = piece_location[0];
     const row = piece_location[1];

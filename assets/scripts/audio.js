@@ -4,3 +4,4 @@ const promote = new Audio("../assets/sounds/promote.mp3");
 const error = new Audio("../assets/sounds/error.mp3");
 const invalid = new Audio("../assets/sounds/invalid.mp3");
 const check = new Audio("../assets/sounds/check.mp3");
+const castles = new Audio("../assets/sounds/castles.mp3");
