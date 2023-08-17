@@ -106,7 +106,7 @@ function find_pawn_moves(color, piece_element, piece_location, pawn_attack_only)
         }
 
         // If pawn hasnt moved, and square two spaces above is empty, add as move.
-        if (!pawn_moved) {
+        if (!pawn_moved && !sq_above.hasChildNodes()) {
             const two_sq_above = document.querySelector(`[data-location="${col}${Number(row) + 2}"]`);
             if (two_sq_above != null && !two_sq_above.hasChildNodes()) {
                 const move = `${col}${Number(row) + 2}`;
