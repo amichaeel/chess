@@ -101,13 +101,12 @@ function release(e) {
         if (dest_element.hasChildNodes()) {
             const dest_element_piece = dest_element.firstChild;
             if (dest_element_piece.getAttribute("id") == "rook" && dest_element_piece.classList.contains(`${current_player}_rook`)) {
-                console.log("Reached")
                 const castle_location = determine_castle_location(move_init_location, dest_location);
                 castle_behavior(castle_location, piece_element, dest_element_piece)
                 castles.play();
             } else {
                 dest_element.innerHTML = "";
-                dest_elmeent.append(piece_element);
+                dest_element.append(piece_element);
                 capture.play();
             }
         } else {
