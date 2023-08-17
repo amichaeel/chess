@@ -228,6 +228,7 @@ function castle_behavior(castle_location, piece_element, dest_element_piece) {
         }
     }
 
+    dest_element_piece.setAttribute("data-moved", true);
 }
 
 function remove_check_styling() {
