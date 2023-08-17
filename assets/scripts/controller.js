@@ -37,7 +37,7 @@ function initialize_controller(e) {
     moves = begin_search(piece_color, piece_name, piece_element, piece_location);
 
     if (piece_name == "king") {
-        determine_castling_rights(current_player, piece_location, piece_element, moves);
+        if (under_check == false) determine_castling_rights(current_player, piece_location, piece_element, moves);
     }
 
     // Add click event listener and highlighting to available moves
