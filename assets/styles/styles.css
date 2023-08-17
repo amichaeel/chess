@@ -5,6 +5,7 @@ body {
 }
 
 #main-wrap {
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -29,8 +30,8 @@ shadow {
 board {
     background-image: url("../img/board.svg");
     display: grid;
-    grid-template-columns: repeat(8, 130px);
-    grid-template-rows: repeat(8, 130px);
+    grid-template-columns: repeat(8, 145px);
+    grid-template-rows: repeat(8, 145px);
     position: relative;
 }
 
@@ -223,10 +224,46 @@ coords coord {
     color: #f0d9b5 !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1173px) {
+    #chessboard {
+        grid-template-columns: repeat(8, 100px);
+        grid-template-rows: repeat(8, 100px);
+    }
+
+    /* Adjust individual square padding for smaller screens */
+    square {
+        padding-bottom: calc(6.25% - 2px);
+    }
+}
+
+@media (max-width: 806px) {
     #chessboard {
         grid-template-columns: repeat(8, 60px);
         grid-template-rows: repeat(8, 60px);
+    }
+
+    /* Adjust individual square padding for smaller screens */
+    square {
+        padding-bottom: calc(6.25% - 2px);
+    }
+}
+
+@media (max-width: 420px) {
+    #chessboard {
+        grid-template-columns: repeat(8, 45px);
+        grid-template-rows: repeat(8, 45px);
+    }
+
+    /* Adjust individual square padding for smaller screens */
+    square {
+        padding-bottom: calc(6.25% - 2px);
+    }
+}
+
+@media (max-width: 300px) {
+    #chessboard {
+        grid-template-columns: repeat(8, 30px);
+        grid-template-rows: repeat(8, 30px);
     }
 
     /* Adjust individual square padding for smaller screens */
