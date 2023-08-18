@@ -1,3 +1,31 @@
+/* Rotated black pieces */
+
+.rblack_pawn {
+    background-image: url("../svg/rbpawn.svg");
+}
+
+.rblack_rook {
+    background-image: url("../svg/rbrook.svg");
+}
+
+.rblack_knight {
+    background-image: url("../svg/rbknight.svg");
+}
+
+.rblack_bishop {
+    background-image: url("../svg/rbbishop.svg");
+}
+
+.rblack_queen {
+    background-image: url("../svg/rbqueen.svg");
+}
+
+.rblack_king {
+    background-image: url("../svg/rbking.svg");
+}
+
+/* Black pieces */
+
 .black_pawn {
     background-image: url("../svg/bpawn.svg");
 }
@@ -21,6 +49,8 @@
 .black_king {
     background-image: url("../svg/bking.svg");
 }
+
+/* White pieces */
 
 .white_pawn {
     background-image: url("../svg/wpawn.svg");

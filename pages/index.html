@@ -7,9 +7,21 @@
         <title>Chess</title>
         <link rel="stylesheet" href="../assets/styles/styles.css" />
         <link rel="stylesheet" href="../assets/styles/pieces.css" />
+        <link rel="stylesheet" href="../assets/styles/reset.css" />
     </head>
     <body>
         <div id="main-wrap">
+            <header>
+                <div class="btn" id="settings-btn"></div>
+                <div id="settings-container">
+                    <div id="settings-menu" class="hidden">
+                        <label class="label" id="flip-black">Flip black pieces</label>
+                        <label class="label" id="flip-white">Flip white pieces</label>
+                        <label class="label show" id="avail-moves">Hide available moves</label>
+                    </div>
+                </div>
+                <div class="btn" id="refresh-btn"></div>
+            </header>
             <div id="board-wrap">
                 <shadow></shadow>
                 <coords class="ranks"><coord>1</coord><coord>2</coord><coord>3</coord><coord>4</coord><coord>5</coord><coord>6</coord><coord>7</coord><coord>8</coord></coords>
@@ -18,6 +30,7 @@
             </div>
         </div>
         <script src="../assets/scripts/audio.js"></script>
+        <script src="../assets/scripts/buttons.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
         <script src="../assets/scripts/pieces.js"></script>
         <script src="../assets/scripts/controller.js"></script>
