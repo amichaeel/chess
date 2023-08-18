@@ -131,6 +131,7 @@ square piece {
     background-size: cover;
     transform: translate(0,0);
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    z-index: 3;
 
 }
 
@@ -175,7 +176,7 @@ coords {
     user-select: none;
     color: #fff;
     font-weight: bold;
-    z-index: 300;
+    z-index: 2;
 }
 
 coords.ranks {
