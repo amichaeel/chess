@@ -67,14 +67,15 @@ function init_pieces() {
 
 function init_event_listeners() {
     squares = chessboard.childNodes;
-
+    
     for (let square of squares) {
         square.addEventListener("contextmenu", highlight);
-        square.addEventListener("click", select);
+        square.addEventListener("mousedown", select);
 
         if (square.hasChildNodes()) {
             const piece = square.childNodes[0];
             piece.dataset.moved = false;
+            // piece.addEventListener("mousedown", drag);
 
             if (piece.getAttribute("id") == "pawn") {
                 piece.dataset.enpassant = false;

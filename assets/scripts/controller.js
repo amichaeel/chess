@@ -1,5 +1,7 @@
 var current_player = "white";
 var under_check = false;
+var is_mouse_down = false;
+var need_for_RAF = true;
 var moves = [];
 var piece_element;
 var square_element;
@@ -11,6 +13,12 @@ var move_dest;
 var under_check;
 var king_location;
 var king_element;
+var current_positionX;
+var current_positionY;
+var start_positionX;
+var start_positionY;
+var distance_position;
+var last_element;
 
 function change_player() {
     // If player was in check, remove check styling.
@@ -24,6 +32,16 @@ function change_player() {
     under_check = determine_check();
 }
 
+function getTranslateX() {
+    var translateX = parseInt(getComputedStyle(piece_element, null).getPropertyValue("transform").split(",")[4]);
+    return translateX;
+}
+
+function getTranslateY() {
+    var translateY = parseInt(getComputedStyle(piece_element, null).getPropertyValue("transform").split(",")[5]);
+    return translateY;
+}
+
 function initialize_controller(e) {
     piece_element = e.target;
     piece_color = piece_element.classList.contains(`${current_player}_piece`) ? current_player : null;
@@ -32,6 +50,16 @@ function initialize_controller(e) {
     piece_location = square_element.getAttribute("data-location");
     move_init = square_element;
     square_element.classList.add("selected");
+    is_mouse_down = true;
+
+    // Drag logic
+    current_positionX = getTranslateX();
+    current_positionY = getTranslateY();
+    start_positionX = e.clientX;
+    start_positionY = e.clientY;
+    document.addEventListener("mousemove", start_drag);
+    document.addEventListener("mouseup", release);
+    piece_element.classList.add("dragging");
 
     // The following will be implemented in another function.
     moves = begin_search(piece_color, piece_name, piece_element, piece_location);
@@ -45,8 +73,8 @@ function initialize_controller(e) {
     for (let move of moves) {
         // if (move == null) break;
         const move_element = document.querySelector(`[data-location="${move}"]`);
-        move_element.removeEventListener("click", select);
-        move_element.addEventListener("click", release);
+        move_element.removeEventListener("mousedown", select);
+        move_element.addEventListener("mousedown", release);
 
         if (move_element.hasChildNodes()) {
             move_element.classList.add("available-with-piece");
@@ -57,6 +85,7 @@ function initialize_controller(e) {
 }
 
 function select(e) {
+    e.preventDefault();
     // If user selects same element twice, reset controller.
     if (e.target == piece_element) {
         reset_controller();
@@ -82,11 +111,46 @@ function select(e) {
     }
 }
 
-function drag(e) {}
+function start_drag(e) {
+    e.preventDefault();
+    distance_positionX = e.clientX - start_positionX + current_positionX; // count it!
+    distance_positionY = e.clientY - start_positionY + current_positionY;
+    if (need_for_RAF && is_mouse_down) {
+        need_for_RAF = false; // no need to call rAF up until next frame
+        requestAnimationFrame(update); // request 60fps animation
+    }
+}
+
+function update() {
+    need_for_RAF = true; // rAF now consumes the movement instruction so a new one can come
+    piece_element.style.transform = `translate(${distance_positionX}px,${distance_positionY}px)`; // move it!
+}
 
 function release(e) {
-    // Get the location of destination square
-    const dest_element = e.target.parentElement.getAttribute("data-location") != null ? e.target.parentElement : e.target;
+    document.removeEventListener("mouseup", start_drag);
+    document.removeEventListener("mousemove", start_drag);
+
+    const target = document.elementFromPoint(e.clientX, e.clientY)
+
+    // Handle invalid destination
+    if (target.getAttribute("id") == "main-wrap" || target.tagName == "body") {
+        return;
+    }
+
+    // If element was selected again, 
+    if (piece_element != null) {
+        piece_element.style.transform = "translate(0,0)";
+        piece_element.classList.remove("dragging")
+    } else {
+        return;
+    }
+
+    const dest_element =
+        document.elementFromPoint(e.clientX, e.clientY).getAttribute("data-location") != null
+            ? document.elementFromPoint(e.clientX, e.clientY)
+            : document.elementFromPoint(e.clientX, e.clientY).parentElement;
+    is_mouse_down = false;
+
     move_dest = dest_element;
     const dest_location = dest_element.getAttribute("data-location");
     const move_init_location = move_init.getAttribute("data-location");
@@ -95,6 +159,10 @@ function release(e) {
     const dest_col = move_dest_location[0];
     const dest_row = Number(move_dest_location[1]);
 
+    if (!moves.includes(dest_location)) {
+        return;
+    }
+
     if (piece_name == "pawn") {
         pawn_behavior(move_init_location, move_dest_location, init_col, dest_col, dest_row, dest_element, piece_element);
     } else if (piece_name == "king") {
@@ -102,7 +170,7 @@ function release(e) {
             const dest_element_piece = dest_element.firstChild;
             if (dest_element_piece.getAttribute("id") == "rook" && dest_element_piece.classList.contains(`${current_player}_rook`)) {
                 const castle_location = determine_castle_location(move_init_location, dest_location);
-                castle_behavior(castle_location, piece_element, dest_element_piece)
+                castle_behavior(castle_location, piece_element, dest_element_piece);
                 castles.play();
             } else {
                 dest_element.innerHTML = "";
@@ -132,7 +200,7 @@ function release(e) {
     // Remove all event listeners from the previous possible moves
     for (let move of moves) {
         const move_element = document.querySelector(`[data-location="${move}"]`);
-        move_element.removeEventListener("click", release);
+        move_element.removeEventListener("mouseup", release);
     }
 
     for (let square of squares) {
@@ -174,8 +242,7 @@ function reset_controller() {
     for (let move of moves) {
         if (move == null) break;
         const square = document.querySelector(`[data-location="${move}"]`);
-        square.removeEventListener("click", release);
-        square.addEventListener("click", select);
+        square.addEventListener("mousedown", select);
     }
 
     moves = [];
